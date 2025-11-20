@@ -1,46 +1,64 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Promotions', {
+    await queryInterface.createTable("Promotions", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       code: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       description: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
       },
-      quantity: {
-        type: Sequelize.INTEGER
+      type: {
+        type: Sequelize.STRING,
       },
       value: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+      },
+      min_order_value: {
+        type: Sequelize.INTEGER,
+      },
+      max_value: {
+        type: Sequelize.INTEGER,
+      },
+      require_point: {
+        type: Sequelize.INTEGER,
+      },
+      max_uses: {
+        type: Sequelize.INTEGER,
+      },
+      used_count: {
+        type: Sequelize.INTEGER,
+      },
+      userid: {
+        type: Sequelize.INTEGER,
       },
       start: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       end: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       status: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Promotions');
-  }
+    await queryInterface.dropTable("Promotions");
+  },
 };

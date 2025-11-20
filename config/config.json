@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "123456789",
-    "database": "badmintontest",
+    "database": "improved_badminton",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

@@ -22,6 +22,12 @@ module.exports = {
       content: {
         type: Sequelize.TEXT,
       },
+      toxicscore: {
+        type: Sequelize.FLOAT,
+      },
+      status: {
+        type: Sequelize.STRING,
+      },
       productid: {
         type: Sequelize.INTEGER,
         // references: {
