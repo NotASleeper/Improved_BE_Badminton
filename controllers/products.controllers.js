@@ -5,6 +5,7 @@ const {
   Categories,
   Orders,
   Ordersdetail,
+  Pro_translation,
 } = require("../models");
 
 const createProducts = async (req, res) => {
@@ -26,41 +27,45 @@ const createProducts = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const { name } = req.query;
+  const { name, languagecode } = req.query;
   console.log(name);
   try {
-    if (name) {
-      const productslist = await Products.findAll({
-        where: {
-          name: {
-            [Op.like]: `%${name}%`,
-          },
-        },
-        include: {
-          model: Categories,
-          attributes: ["name"],
-        },
-        include: {
-          model: Imagesproduct,
-          attributes: ["url"],
-        },
+    const where = {};
+    const include = [
+      {
+        model: Categories,
+        attributes: ["name"],
+      },
+      {
+        model: Imagesproduct,
+        attributes: ["url"],
+      },
+    ];
+
+    // Nếu có languagecode thì tìm theo bản dịch; nếu có name kèm languagecode thì tìm trong Pro_translation
+    if (languagecode) {
+      const transWhere = { languagecode };
+      if (name) {
+        transWhere.name = { [Op.like]: `%${name}%` };
+      }
+
+      include.push({
+        model: Pro_translation,
+        attributes: ["name", "languagecode", "description"],
+        where: transWhere,
+        required: true, // chỉ lấy sản phẩm có bản dịch đúng languagecode
       });
-      res.status(200).send(productslist);
-    } else {
-      const productslist = await Products.findAll({
-        include: [
-          {
-            model: Categories,
-            attributes: ["name"],
-          },
-          {
-            model: Imagesproduct,
-            attributes: ["url"],
-          },
-        ],
-      });
-      res.status(200).send(productslist);
+    } else if (name) {
+      // Nếu không có languagecode nhưng có name -> tìm trên trường name của Products
+      where.name = { [Op.like]: `%${name}%` };
     }
+
+    const productslist = await Products.findAll({
+      where,
+      include,
+    });
+
+    res.status(200).send(productslist);
   } catch (error) {
     res.status(500).send(error);
   }

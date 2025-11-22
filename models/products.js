@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Carts,
       GRNdetails,
       Ordersdetail,
+      Pro_translation,
     }) {
       // define association here
       this.belongsTo(Categories, {
@@ -28,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "productid",
       });
       this.hasMany(Ordersdetail, {
+        foreignKey: "productid",
+      });
+      this.hasMany(Pro_translation, {
         foreignKey: "productid",
       });
     }
