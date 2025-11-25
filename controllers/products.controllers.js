@@ -9,19 +9,48 @@ const {
 } = require("../models");
 
 const createProducts = async (req, res) => {
+  const {
+    categoriesid,
+    price,
+    brand,
+    quantity,
+    languagecode,
+    name,
+    description,
+  } = req.body;
+  const t = await sequelize.transaction();
   try {
-    const { name, categoriesid, description, price, brand, quantity } =
-      req.body;
-    const newProducts = await Products.create({
-      name,
-      categoriesid,
-      description,
-      price,
-      brand,
-      quantity,
+    const product = await Products.create(
+      { categoriesid, price, brand, quantity },
+      { transaction: t }
+    );
+
+    if (languagecode && name) {
+      await Pro_translation.create(
+        {
+          productid: product.id,
+          languagecode,
+          name,
+          description: description || null,
+        },
+        { transaction: t }
+      );
+    }
+
+    await t.commit();
+    const created = await Products.findOne({
+      where: { id: product.id },
+      include: [
+        { model: Categories, attributes: ["name"] },
+        {
+          model: Pro_translation,
+          attributes: ["languagecode", "name", "description"],
+        },
+      ],
     });
-    res.status(201).send(newProducts);
+    res.status(201).send(created);
   } catch (error) {
+    await t.rollback();
     res.status(500).send(error);
   }
 };
@@ -73,20 +102,36 @@ const getAllProducts = async (req, res) => {
 
 const getDetailProducts = async (req, res) => {
   const { id } = req.params;
+  const { languagecode } = req.query;
   try {
+    const include = [
+      {
+        model: Categories,
+        attributes: ["name"],
+      },
+      {
+        model: Imagesproduct,
+        attributes: ["id", "url"],
+      },
+    ];
+
+    //Nếu tồn tại language code thì lấy bản dịch
+    if (languagecode) {
+      include.push({
+        model: Pro_translation,
+        attributes: ["name", "languagecode", "description"],
+        where: { languagecode },
+        required: false, // Left join (nghĩa là vẫn lấy product nếu không có bản dịch)
+      });
+    }
+
     const detailProducts = await Products.findOne({
       where: { id },
-      include: [
-        {
-          model: Categories,
-          attributes: ["name"],
-        },
-        {
-          model: Imagesproduct,
-          attributes: ["id", "url"],
-        },
-      ],
+      include,
     });
+    if (!detailProducts) {
+      return res.status(404).send({ message: "Product not found" });
+    }
     res.status(200).send(detailProducts);
   } catch (error) {
     res.status(500).send(error);
@@ -95,20 +140,71 @@ const getDetailProducts = async (req, res) => {
 
 const updateProducts = async (req, res) => {
   const { id } = req.params;
-  const { name, categoriesid, description, price, brand, quantity } = req.body;
+  const {
+    categoriesid,
+    price,
+    brand,
+    quantity,
+    languagecode,
+    name,
+    description,
+  } = req.body;
+  const t = await sequelize.transaction();
   try {
-    const detailProducts = await Products.findOne({
+    const product = await Products.findOne({ where: { id } });
+    if (!product) {
+      await t.rollback();
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    if (categoriesid !== undefined) product.categoriesid = categoriesid;
+    if (price !== undefined) product.price = price;
+    if (brand !== undefined) product.brand = brand;
+    if (quantity !== undefined) product.quantity = quantity;
+    await product.save({ transaction: t });
+
+    if (languagecode && (name !== undefined || description !== undefined)) {
+      const trans = await Pro_translation.findOne({
+        where: { productid: id, languagecode },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+
+      if (trans) {
+        if (name !== undefined) trans.name = name;
+        if (description !== undefined) trans.description = description;
+        await trans.save({ transaction: t });
+      } else {
+        await Pro_translation.create(
+          {
+            productid: id,
+            languagecode,
+            name: name || "",
+            description: description || null,
+          },
+          { transaction: t }
+        );
+      }
+    }
+
+    await t.commit();
+
+    const updated = await Products.findOne({
       where: { id },
+      include: [
+        { model: Categories, attributes: ["name"] },
+        {
+          model: Pro_translation,
+          attributes: ["languagecode", "name", "description"],
+          where: languagecode ? { languagecode } : undefined,
+          required: false,
+        },
+      ],
     });
-    detailProducts.name = name;
-    detailProducts.categoriesid = categoriesid;
-    detailProducts.description = description;
-    detailProducts.price = price;
-    detailProducts.brand = brand;
-    detailProducts.quantity = quantity;
-    await detailProducts.save();
-    res.status(200).send(detailProducts);
+
+    res.status(200).send(updated);
   } catch (error) {
+    await t.rollback();
     res.status(500).send(error);
   }
 };
