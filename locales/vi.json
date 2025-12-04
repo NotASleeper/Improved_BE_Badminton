@@ -1,0 +1,4 @@
+{
+  "order.status_changed": "Đơn hàng #{{order_id}} đã thay đổi trạng thái: {{status}}",
+  "comment.new": "{{user_name}} đã bình luận về bài viết của bạn"
+}

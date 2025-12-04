@@ -1,10 +1,19 @@
 const { Reviews, Users, Orders, Ordersdetail } = require("../models");
+const { createNotification } = require("../services/notification.js");
 
 const createReviews = async (req, res) => {
   try {
-    const { userid, rating, content, productid, orderid, prereviewid } =
-      req.body;
-
+    const {
+      userid,
+      rating,
+      content,
+      toxicscore,
+      status,
+      productid,
+      orderid,
+      prereviewid,
+    } = req.body;
+    console.log(req.body);
     const user = await Users.findOne({
       where: { id: userid },
     });
@@ -31,10 +40,20 @@ const createReviews = async (req, res) => {
       userid,
       rating,
       content,
+      toxicscore,
+      status,
       productid,
       orderid,
       prereviewid,
     });
+
+    await createNotification({
+      userid: userid,
+      type: "review",
+      messagekey: "comment.new",
+      relatedid: 1,
+    });
+
     res.status(201).send(newReview);
   } catch (error) {
     res.status(500).send(error);

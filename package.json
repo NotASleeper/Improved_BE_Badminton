@@ -14,11 +14,13 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.0",
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.14.0",
     "nodemailer": "^7.0.3",
+    "path": "^0.12.7",
     "sequelize": "^6.37.7",
     "vnpay": "^2.3.0"
   },

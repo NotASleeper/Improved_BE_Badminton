@@ -1,25 +1,10 @@
 const { Notifications } = require("../models");
+const { translate } = require("../utils/translator");
 const { Op } = require("sequelize");
-
-const createNotification = async (req, res) => {
-  try {
-    const { userid, type, messagekey, relatedid } = req.body;
-    const newNotification = await Notifications.create({
-      userid,
-      type,
-      messagekey,
-      relatedid,
-      isread: false, // mặc định chưa đọc
-    });
-    res.status(201).send(newNotification);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
 
 const getAllNotifications = async (req, res) => {
   try {
-    const { userid, isread, type } = req.query;
+    const { lang, userid, isread, type } = req.body;
     const where = {};
 
     if (userid) where.userid = userid;
@@ -30,7 +15,13 @@ const getAllNotifications = async (req, res) => {
       where,
       order: [["createdAt", "DESC"]], // mới nhất trước
     });
-    res.status(200).send(notificationsList);
+
+    const translatedNoti = [];
+    for (const noti of notificationsList) {
+      const Message = translate(lang, noti.messagekey, noti.relatedid);
+      translatedNoti.push(Message);
+    }
+    res.status(200).send(translatedNoti);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -118,7 +109,6 @@ const getUnreadCount = async (req, res) => {
 };
 
 module.exports = {
-  createNotification,
   getAllNotifications,
   getDetailNotification,
   markAsRead,
