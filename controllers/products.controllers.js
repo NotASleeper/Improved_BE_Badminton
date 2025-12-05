@@ -7,7 +7,6 @@ const {
   Ordersdetail,
   Pro_translation,
 } = require("../models");
-const { translateJSON } = require("../services/translate.js");
 
 const createProducts = async (req, res) => {
   const {
@@ -264,40 +263,6 @@ const getTop5ProductsByMonth = async (req, res) => {
   }
 };
 
-const createtranslatedProduct = async (req, res) => {
-  try {
-    const { productid, lang, targetlang } = req.body;
-
-    // Lấy bản ghi gốc
-    const translated = await Pro_translation.findOne({
-      where: { productid, languagecode: lang },
-      raw: true,
-      attributes: ["name", "description"],
-    });
-
-    if (!translated) {
-      return res.status(404).send({ message: "Không tìm thấy sản phẩm." });
-    }
-
-    console.log("Original JSON:", translated);
-
-    // Dịch từng trường
-    const result = await translateJSON(translated, lang, targetlang);
-
-    const finalresult = await Pro_translation.create({
-      productid,
-      languagecode: targetlang,
-      name: result.name,
-      description: result.description,
-    });
-
-    return res.status(201).send(finalresult);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send({ error: "Lỗi server", details: err });
-  }
-};
-
 module.exports = {
   createProducts,
   getAllProducts,
@@ -305,5 +270,4 @@ module.exports = {
   updateProducts,
   deleteProducts,
   getTop5ProductsByMonth,
-  createtranslatedProduct,
 };

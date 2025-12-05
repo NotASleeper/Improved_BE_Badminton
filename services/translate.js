@@ -14,7 +14,6 @@ async function translateText(text, sourceLang, targetLang) {
     ],
   };
 
-  console.log("Translate API Request Body:", body.contents[0].parts[0].text);
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -22,7 +21,6 @@ async function translateText(text, sourceLang, targetLang) {
   });
 
   const json = await response.json();
-  console.log("Translate API Response:", json);
   return json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 }
 
