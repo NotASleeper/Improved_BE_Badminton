@@ -6,6 +6,7 @@ const {
   Orders,
   Users,
 } = require("../models");
+const { calculatePromotionValue } = require("./promotions.controllers");
 
 const createCarts = async (req, res) => {
   try {
@@ -143,9 +144,10 @@ const CheckoutCarts = async (req, res) => {
         status: 0,
       });
     } else {
+      const discount = calculatePromotionValue(promotion, totalAmount, userid);
       newOrder = await Orders.create({
         userid,
-        totalprice: totalAmount * (1 - promotion.value / 100),
+        totalprice: totalAmount - discount,
         phonenumber,
         address,
         promotionid: promotion.id,

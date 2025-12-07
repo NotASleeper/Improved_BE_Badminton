@@ -1,4 +1,4 @@
-const { Promotions } = require("../models");
+const { Promotions, Users } = require("../models");
 
 const createPromotions = async (req, res) => {
   try {
@@ -147,6 +147,87 @@ const deletePromotions = async (req, res) => {
   }
 };
 
+const calculatePromotionValue = (promotion, orderTotal, userid) => {
+  let discount = 0;
+  const now = new Date();
+  const user = Users.findOne({ where: { id: userid } });
+
+  if (!promotion || promotion.status !== 1) {
+    return 0;
+  }
+  if (promotion.start > now || promotion.end < now) {
+    return 0;
+  }
+  if (promotion.userid && promotion.userid !== userid) {
+    return 0;
+  }
+
+  if (promotion.require_point && user.loyaltypoint < promotion.require_point) {
+    return 0;
+  }
+
+  if (orderTotal < promotion.min_order_value) {
+    return 0;
+  }
+  if (promotion.used_count >= promotion.max_uses) {
+    return 0;
+  }
+  if (promotion.type === "percent") {
+    discount = (orderTotal * promotion.value) / 100;
+  } else if (promotion.type === "fixed") {
+    discount = promotion.value;
+  }
+
+  if (promotion.max_value !== null && discount > promotion.max_value) {
+    discount = promotion.max_value;
+  }
+
+  console.log("Calculated discount:", discount);
+
+  return discount;
+};
+
+const suggestedPromotions = async (req, res) => {
+  try {
+    const { orderTotal, userid } = req.query;
+    if (!orderTotal || !userid) {
+      return res.status(400).json({
+        error: "orderTotal và userid là bắt buộc",
+      });
+    }
+
+    const orderValue = parseFloat(orderTotal);
+
+    // Lấy tất cả promotion đang active
+    const allPromotions = await Promotions.findAll({
+      where: { status: 1 },
+      raw: true,
+    });
+
+    // Tính giá trị giảm giá cho từng promotion
+    const promotionsWithDiscount = await Promise.all(
+      allPromotions.map(async (promotion) => {
+        const discount = await calculatePromotionValue(
+          promotion,
+          orderValue,
+          userid
+        );
+        return {
+          ...promotion,
+          discountAmount: discount,
+        };
+      })
+    );
+    // Lọc các promotion có thể áp dụng (discount > 0)
+    const applicablePromotions = promotionsWithDiscount
+      .filter((p) => p.discountAmount > 0)
+      .sort((a, b) => b.discountAmount - a.discountAmount); // Sắp xếp giảm dần theo giá trị giảm
+    res.status(200).send(applicablePromotions);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 module.exports = {
   createPromotions,
   getAllPromotions,
@@ -154,4 +235,6 @@ module.exports = {
   updatePromotions,
   deletePromotions,
   getDetailPromotionsByCode,
+  calculatePromotionValue,
+  suggestedPromotions,
 };
