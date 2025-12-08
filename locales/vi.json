@@ -1,4 +1,28 @@
 {
-  "order.status_changed": "Đơn hàng #{{order_id}} đã thay đổi trạng thái: {{status}}",
-  "comment.new": "{{user_name}} đã bình luận về bài viết của bạn"
+  "order.created": "Đơn hàng #{{order_id}} của bạn đã được tạo thành công với giá trị {{total_price}}",
+  "order.confirmed": "Đơn hàng #{{order_id}} đã được xác nhận và đang chuẩn bị",
+  "order.processing": "Đơn hàng #{{order_id}} đang được xử lý",
+  "order.shipping": "Đơn hàng #{{order_id}} đang được giao đến bạn",
+  "order.delivered": "Đơn hàng #{{order_id}} đã được giao thành công",
+  "order.cancelled": "Đơn hàng #{{order_id}} đã bị hủy. Lý do: {{reason}}",
+  "order.returned": "Yêu cầu trả hàng cho đơn #{{order_id}} đã được tiếp nhận",
+  "order.refunded": "Đơn hàng #{{order_id}} đã được hoàn tiền {{refund_amount}}",
+  "order.payment_failed": "Thanh toán đơn hàng #{{order_id}} thất bại. Vui lòng thử lại",
+  "order.payment_success": "Thanh toán đơn hàng #{{order_id}} thành công. Cảm ơn bạn!",
+
+  "review.new": "{{user_name}} đã bình luận về sản phẩm {{product_name}}",
+  "review.new_response": "{{user_name}} đã phản hồi bình luận của bạn",
+  "review.approved": "Bình luận của bạn về {{product_name}} đã được duyệt",
+  "review.rejected": "Bình luận của bạn về {{product_name}} đã bị từ chối do vi phạm nội quy cộng đồng",
+  "review.helpful": "{{user_name}} đã đánh dấu bình luận của bạn hữu ích",
+  "review.mentioned": "{{user_name}} đã nhắc đến bạn trong một bình luận",
+
+  "promotion.new": "🎉 Bạn nhận được mã giảm giá {{code}} trị giá {{value}}",
+  "promotion.exclusive": "🎁 Ưu đãi đặc biệt dành riêng cho bạn: {{code}} - Giảm {{value}}",
+  "promotion.expiring": "⏰ Mã {{code}} sắp hết hạn vào {{expiry_date}}. Sử dụng ngay!",
+  "promotion.applied": "Mã {{code}} đã được áp dụng cho đơn hàng #{{order_id}}. Bạn tiết kiệm {{discount_amount}}",
+  "promotion.birthday": "🎂 Chúc mừng sinh nhật! Nhận ngay mã {{code}} giảm {{value}}",
+  "promotion.loyalty": "💎 Tích đủ {{points}} điểm! Nhận mã {{code}} giảm {{value}}",
+  "promotion.flash_sale": "⚡ Flash Sale! Giảm {{value}} cho đơn từ {{min_order}}. Mã: {{code}}",
+  "promotion.welcome": "Chào mừng bạn đến với cửa hàng! Nhận mã {{code}} cho đơn đầu tiên"
 }

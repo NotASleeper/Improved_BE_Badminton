@@ -1,18 +1,11 @@
 const { Reviews, Users, Orders, Ordersdetail } = require("../models");
+const { censorContent } = require("../services/censorship.js");
 const { createNotification } = require("../services/notification.js");
 
 const createReviews = async (req, res) => {
   try {
-    const {
-      userid,
-      rating,
-      content,
-      toxicscore,
-      status,
-      productid,
-      orderid,
-      prereviewid,
-    } = req.body;
+    const { userid, rating, content, productid, orderid, prereviewid } =
+      req.body;
     console.log(req.body);
     const user = await Users.findOne({
       where: { id: userid },
@@ -36,6 +29,17 @@ const createReviews = async (req, res) => {
         .status(400)
         .send({ message: "Bạn chưa mua sản phẩm này nên không thể đánh giá!" });
     }
+
+    let status = "";
+    const toxicscore = await censorContent(content);
+    if (parseInt(toxicscore) >= 70) {
+      status = "rejected"; // Tự động từ chối
+    } else if (parseInt(toxicscore) >= 40) {
+      status = "pending"; // Chuyển về trạng thái chờ duyệt
+    } else {
+      status = "approved"; // Tự động duyệt
+    }
+
     const newReview = await Reviews.create({
       userid,
       rating,
@@ -47,12 +51,26 @@ const createReviews = async (req, res) => {
       prereviewid,
     });
 
-    await createNotification({
-      userid: userid,
-      type: "review",
-      messagekey: "comment.new",
-      relatedid: 1,
-    });
+    if (status === "rejected") {
+      await createNotification({
+        userid: userid,
+        type: "review",
+        messagekey: "review.rejected",
+        relatedid: newReview.id,
+      });
+    } else if (prereviewid && status === "approved") {
+      const prereview = await Reviews.findOne({
+        where: { id: prereviewid },
+      });
+      if (prereview) {
+        await createNotification({
+          userid: prereview.userid,
+          type: "review",
+          messagekey: "review.new_response",
+          relatedid: newReview.id,
+        });
+      }
+    }
 
     res.status(201).send(newReview);
   } catch (error) {

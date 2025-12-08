@@ -1,4 +1,5 @@
 {
-  "order.status_changed": "Đơn hàng #{{order_id}} đã thay đổi trạng thái: {{status}}",
-  "comment.new": "{{user_name}} have commented on your post"
+  "order.status_changed": "Đơn hàng {{order_id}} đã thay đổi trạng thái: {{status}}",
+  "review.new_response": "{{user_name}} have commented on your post",
+  "review.rejected": "Bình luận của bạn đã bị từ chối do vi phạm nội quy cộng đồng."
 }

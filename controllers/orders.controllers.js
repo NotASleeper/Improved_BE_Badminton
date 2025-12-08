@@ -1,5 +1,6 @@
 const { Orders, Users, Promotions, Payment } = require("../models");
 const { Op } = require("sequelize");
+const { createNotification } = require("../services/notification");
 
 const createOrder = async (req, res) => {
   try {
@@ -109,16 +110,74 @@ const updateOrder = async (req, res) => {
     const detailOrder = await Orders.findOne({
       where: { id },
     });
-    detailOrder.userid = userid;
-    detailOrder.totalprice = totalprice;
-    detailOrder.phonenumber = phonenumber;
-    detailOrder.address = address;
-    detailOrder.promotionid = promotionid;
-    detailOrder.status = status;
-    detailOrder.process = process;
-    detailOrder.shipping = shipping;
-    detailOrder.delivered = delivered;
+
+    // Lưu status cũ để so sánh
+    const oldStatus = detailOrder.status;
+    const oldProcess = detailOrder.process;
+    const oldShipping = detailOrder.shipping;
+    const oldDelivered = detailOrder.delivered;
+
+    // Cập nhật thông tin đơn hàng
+    if (userid !== undefined) detailOrder.userid = userid;
+    if (totalprice !== undefined) detailOrder.totalprice = totalprice;
+    if (phonenumber !== undefined) detailOrder.phonenumber = phonenumber;
+    if (address !== undefined) detailOrder.address = address;
+    if (promotionid !== undefined) detailOrder.promotionid = promotionid;
+    if (status !== undefined) detailOrder.status = status;
+    if (process !== undefined) detailOrder.process = process;
+    if (shipping !== undefined) detailOrder.shipping = shipping;
+    if (delivered !== undefined) detailOrder.delivered = delivered;
     await detailOrder.save();
+    // Đơn hàng được xác nhận
+    if (status === 1 && oldStatus !== 1) {
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.confirmed",
+        relatedid: detailOrder.id,
+      });
+    }
+
+    // Đơn hàng bị hủy
+    if (status === -1 && oldStatus !== -1) {
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.canceled",
+        relatedid: detailOrder.id,
+      });
+    }
+
+    // Đơn hàng đã được giao
+    if (delivered !== null && oldDelivered === null) {
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.delivered",
+        relatedid: detailOrder.id,
+      });
+    }
+
+    // Đơn hàng đang vận chuyển
+    if (shipping !== null && oldShipping === null) {
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.shipping",
+        relatedid: detailOrder.id,
+      });
+    }
+
+    // Đơn hàng đang được xử lý
+    if (process !== null && oldProcess === null) {
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.processing",
+        relatedid: detailOrder.id,
+      });
+    }
+
     res.status(200).send(detailOrder);
   } catch (error) {
     res.status(500).send(error);

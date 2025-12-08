@@ -86,11 +86,23 @@ const checkPaymentVNPAY = async (req, res) => {
         paymentmethod: "VNPAY",
         status: 1, // 1 = PAID
       });
+      await createNotification({
+        userid: order.userid,
+        type: "order",
+        messagekey: "order.payment_success",
+        relatedid: orderid,
+      });
 
       return res.redirect(
         `http://localhost:3030/paymentsuccess?orderId=${orderid}`
       );
     } else {
+      await createNotification({
+        userid: order.userid,
+        type: "order",
+        messagekey: "order.payment_failed",
+        relatedid: orderid,
+      });
       return res.redirect(
         `http://localhost:3030/paymentfailed?orderId=${orderid}`
       );
@@ -107,6 +119,9 @@ const checkPaymentPaypal = async (req, res) => {
   try {
     const data = await capturePayment(req.query.token);
     const orderid = req.query.orderid;
+    const userid = await Orders.findOne({
+      where: { id: orderid },
+    }).then((order) => order.userid);
     if (data.status === "COMPLETED") {
       await Payment.create({
         transactionid: data.id,
@@ -115,10 +130,23 @@ const checkPaymentPaypal = async (req, res) => {
         status: 1, // 1 = PAID
       });
 
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.payment_success",
+        relatedid: orderid,
+      });
+
       return res.redirect(
         `http://localhost:3030/paymentsuccess?orderId=${orderid}`
       );
     } else {
+      await createNotification({
+        userid: userid,
+        type: "order",
+        messagekey: "order.payment_failed",
+        relatedid: orderid,
+      });
       return res.redirect(
         `http://localhost:3030/paymentfailed?orderId=${orderid}`
       );

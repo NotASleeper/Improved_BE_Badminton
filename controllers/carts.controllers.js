@@ -152,7 +152,7 @@ const CheckoutCarts = async (req, res) => {
         address,
         promotionid: promotion.id,
         status: 0,
-        // 0: Chưa thanh toán, 1: Đã thanh toán
+        // -1: Bị hủy 0: Chưa xác nhận, 1: Đã xác nhận
       });
     }
 
