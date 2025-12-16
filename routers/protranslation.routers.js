@@ -11,7 +11,7 @@ const {
 const proTranslationRouter = express.Router();
 
 proTranslationRouter.post("/", createProTranslation);
-proTranslationRouter.post("/translate", createtranslatedProduct);
+proTranslationRouter.get("/translate", createtranslatedProduct);
 proTranslationRouter.get(
   "/:productid/:languagecode",
   getDetailtranslationbyProid_lang

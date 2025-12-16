@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 
 const getAllNotifications = async (req, res) => {
   try {
-    const { lang, userid, isread, type } = req.body;
+    const { lang, userid, isread, type } = req.query;
     const where = {};
 
     const user = await Users.findOne({ where: { id: userid } });
@@ -174,7 +174,9 @@ const sendPromotionNoti = async (req, res) => {
           relatedid: promotionid,
         });
       }
-      return res.status(200).send({ message: "Promotion notifications sent to eligible users" });
+      return res
+        .status(200)
+        .send({ message: "Promotion notifications sent to eligible users" });
     }
   } catch (error) {
     return res

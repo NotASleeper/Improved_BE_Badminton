@@ -15,6 +15,7 @@ const { imguserRouter } = require("./imagesuser.routers");
 const paymentRouter = require("./payment.routers");
 const { notificationsRouter } = require("./notifications.router");
 const { proTranslationRouter } = require("./protranslation.routers");
+const { chatsRouter } = require("./chats.routers");
 
 const rootRouter = express.Router();
 
@@ -34,6 +35,7 @@ rootRouter.use("/imguser", imguserRouter);
 rootRouter.use("/payment", paymentRouter);
 rootRouter.use("/notifications", notificationsRouter);
 rootRouter.use("/protranslations", proTranslationRouter);
+rootRouter.use("/chats", chatsRouter);
 
 module.exports = {
   rootRouter,

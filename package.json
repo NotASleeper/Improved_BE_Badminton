@@ -22,6 +22,7 @@
     "nodemailer": "^7.0.3",
     "path": "^0.12.7",
     "sequelize": "^6.37.7",
+    "socket.io": "^4.8.1",
     "vnpay": "^2.3.0"
   },
   "devDependencies": {
