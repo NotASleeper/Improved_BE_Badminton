@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(Categories, {
         foreignKey: "categoriesid",
+        as: "cate",
       });
       this.hasMany(Imagesproduct, {
         foreignKey: "productid",
@@ -33,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(Pro_translation, {
         foreignKey: "productid",
+        as: "translations",
       });
     }
   }

@@ -42,7 +42,7 @@ const connection = (io) => {
       try {
         // Lưu vào DB
         await Chats.create({
-          room: data.room,
+          room: userRoom,
           senderid: data.senderid,
           senderrole: data.senderrole,
           content: data.content,
