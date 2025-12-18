@@ -228,12 +228,13 @@ const deleteProducts = async (req, res) => {
 };
 
 const getTop5ProductsByMonth = async (req, res) => {
-  const { month, year } = req.query;
+  const { month, year, lang } = req.query;
   try {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 1);
 
-    const topProducts = await Ordersdetail.findAll({
+    // Step 1: Get top 5 products by sales
+    const topProductIds = await Ordersdetail.findAll({
       attributes: [
         "productid",
         [fn("SUM", col("Ordersdetail.quantity")), "totalSold"],
@@ -247,20 +248,46 @@ const getTop5ProductsByMonth = async (req, res) => {
               [Op.gte]: startDate,
               [Op.lt]: endDate,
             },
-            status: 1, // chỉ tính đơn đã hoàn thành (nếu có trường status)
+            status: 1,
           },
         },
-        {
-          model: Products,
-          attributes: ["id", "name", "price"],
-        },
       ],
-      group: ["productid", "Product.id"],
+      group: ["productid"],
       order: [[literal("totalSold"), "DESC"]],
       limit: 5,
+      raw: true,
+      subQuery: false,
     });
 
-    res.status(200).send(topProducts);
+    // Step 2: Extract product IDs and get full product details with translations
+    const productIds = topProductIds.map((item) => item.productid);
+
+    const topProducts = await Products.findAll({
+      where: { id: { [Op.in]: productIds } },
+      attributes: ["id", "price", "brand", "quantity"],
+      include: [
+        {
+          model: Pro_translation,
+          as: "translations",
+          attributes: ["languagecode", "name", "description"],
+          where: lang ? { languagecode: lang } : undefined,
+          required: false,
+        },
+      ],
+    });
+
+    // Step 3: Merge totalSold back into products
+    const result = topProducts.map((product) => {
+      const sales = topProductIds.find(
+        (item) => item.productid === product.id
+      );
+      return {
+        ...product.toJSON(),
+        totalSold: sales ? sales.totalSold : 0,
+      };
+    });
+
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send(error);
   }
