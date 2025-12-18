@@ -1,4 +1,4 @@
-const { Ordersdetail, Products } = require("../models");
+const { Ordersdetail, Products, Pro_translation } = require("../models");
 
 const createOrderDetail = async (req, res) => {
   try {
@@ -16,13 +16,22 @@ const createOrderDetail = async (req, res) => {
 
 const getAllOrderDetails = async (req, res) => {
   const { orderid } = req.params;
+  const { lang } = req.query;
   try {
     const orderDetails = await Ordersdetail.findAll({
       where: { orderid: orderid },
       include: [
         {
           model: Products,
-          attributes: ["id", "name", "price", "description", "brand"],
+          attributes: ["id", "price", "brand"],
+          include: [
+            {
+              model: Pro_translation,
+              as: "translations",
+              attributes: ["languagecode", "name", "description"],
+              where: { languagecode: lang },
+            },
+          ],
         },
       ],
     });
@@ -34,6 +43,7 @@ const getAllOrderDetails = async (req, res) => {
 
 const getOrderDetailById = async (req, res) => {
   const { id, orderid } = req.params;
+  const { lang } = req.query;
   try {
     const orderDetail = await Ordersdetail.findOne({
       where: {
@@ -43,7 +53,15 @@ const getOrderDetailById = async (req, res) => {
       include: [
         {
           model: Products,
-          attributes: ["id", "name", "price", "description", "brand"],
+          attributes: ["id", "price", "brand"],
+          include: [
+            {
+              model: Pro_translation,
+              as: "translations",
+              attributes: ["languagecode", "name", "description"],
+              where: { languagecode: lang },
+            },
+          ],
         },
       ],
     });
