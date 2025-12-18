@@ -5,6 +5,7 @@ const {
   Ordersdetail,
   Orders,
   Users,
+  Pro_translation,
 } = require("../models");
 const { calculatePromotionValue } = require("./promotions.controllers");
 
@@ -35,11 +36,18 @@ const createCarts = async (req, res) => {
 const getAllCartsbyUserId = async (req, res) => {
   try {
     const { userid } = req.params;
+    const { lang } = req.query;
     const cartsList = await Carts.findAll({
       where: { userid },
       include: {
         model: Products,
-        attributes: ["id", "name", "price", "description", "brand"],
+        attributes: ["id", "price", "brand"],
+        include: {
+          model: Pro_translation,
+          as: "translations",
+          attributes: ["languagecode", "name", "description"],
+          where: { languagecode: lang },
+        },
       },
       include: {
         model: Users,

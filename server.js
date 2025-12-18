@@ -34,7 +34,7 @@ const io = new Server(httpServer, {
 
 // Xử lý logic kết nối Socket
 const socketService = require("./services/socket.service");
-const { initVectorStore } = require("./services/chatbot");
+
 socketService.connection(io);
 
 // Lắng nghe trên httpServer thay vì app
@@ -44,7 +44,7 @@ httpServer.listen(PORT, async () => {
   try {
     await sequelize.authenticate();
     console.log("Kết nối thành công đến cơ sở dữ liệu MySQL.");
-    await chatbotService.initVectorStore();
+    // await chatbotService.initVectorStore();
   } catch (error) {
     console.error("Không thể kết nối đến cơ sở dữ liệu MySQL:", error);
   }

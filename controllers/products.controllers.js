@@ -6,6 +6,7 @@ const {
   Orders,
   Ordersdetail,
   Pro_translation,
+  sequelize,
 } = require("../models");
 
 const createProducts = async (req, res) => {
@@ -63,6 +64,7 @@ const getAllProducts = async (req, res) => {
     const include = [
       {
         model: Categories,
+        as: "cate",
         attributes: ["name"],
       },
       {
@@ -80,6 +82,7 @@ const getAllProducts = async (req, res) => {
 
       include.push({
         model: Pro_translation,
+        as: "translations",
         attributes: ["name", "languagecode", "description"],
         where: transWhere,
         required: true, // chỉ lấy sản phẩm có bản dịch đúng languagecode

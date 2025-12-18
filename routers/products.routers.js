@@ -17,10 +17,10 @@ const productRouter = express.Router();
 productRouter.post("/", authenticate, authorize, createProducts);
 
 productRouter.get("/", getAllProducts);
+productRouter.get("/best-sale/top5", getTop5ProductsByMonth);
 productRouter.get("/:id", getDetailProducts);
 productRouter.put("/:id", checkExist(Products), updateProducts);
 productRouter.delete("/:id", checkExist(Products), deleteProducts);
-productRouter.get("/best-sale/top5", getTop5ProductsByMonth);
 
 module.exports = {
   productRouter,
