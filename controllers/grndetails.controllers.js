@@ -1,4 +1,4 @@
-const { GRNdetails, Products, GRN } = require("../models");
+const { GRNdetails, Products, GRN, Pro_translation } = require("../models");
 
 const createGRNDetails = async (req, res) => {
   try {
@@ -31,13 +31,22 @@ const createGRNDetails = async (req, res) => {
 
 const getlistGRNDetails = async (req, res) => {
   const { grnid } = req.params;
+  const { lang } = req.query;
   try {
     const grnDetails = await GRNdetails.findAll({
       where: { grnid: grnid },
       include: [
         {
           model: Products,
-          attributes: ["id", "name", "price", "description", "brand"],
+          attributes: ["id", "price", "brand"],
+          include: [
+            {
+              model: Pro_translation,
+              as: "translations",
+              attributes: ["languagecode", "name", "description"],
+              where: { languagecode: lang },
+            },
+          ],
         },
       ],
     });
@@ -49,6 +58,7 @@ const getlistGRNDetails = async (req, res) => {
 
 const getGRNDetailsById = async (req, res) => {
   const { id, grnid } = req.params;
+  const { lang } = req.query;
   try {
     const detailGRNDetails = await GRNdetails.findOne({
       where: {
@@ -58,7 +68,15 @@ const getGRNDetailsById = async (req, res) => {
       include: [
         {
           model: Products,
-          attributes: ["id", "name", "price", "description", "brand"],
+          attributes: ["id", "price", "brand"],
+          include: [
+            {
+              model: Pro_translation,
+              as: "translations",
+              attributes: ["languagecode", "name", "description"],
+              where: { languagecode: lang },
+            },
+          ],
         },
       ],
     });
