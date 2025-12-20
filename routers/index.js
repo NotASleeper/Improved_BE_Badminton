@@ -16,6 +16,8 @@ const paymentRouter = require("./payment.routers");
 const { notificationsRouter } = require("./notifications.router");
 const { proTranslationRouter } = require("./protranslation.routers");
 const { chatsRouter } = require("./chats.routers");
+const { flashsalesRouter } = require("./flashsales.routers");
+const { flashsaledetailsRouter } = require("./flashsaledetails.routers");
 
 const rootRouter = express.Router();
 
@@ -36,6 +38,8 @@ rootRouter.use("/payment", paymentRouter);
 rootRouter.use("/notifications", notificationsRouter);
 rootRouter.use("/protranslations", proTranslationRouter);
 rootRouter.use("/chats", chatsRouter);
+rootRouter.use("/flashsales", flashsalesRouter);
+rootRouter.use("/flashsaledetails", flashsaledetailsRouter);
 
 module.exports = {
   rootRouter,

@@ -110,6 +110,7 @@ const getDetailProducts = async (req, res) => {
     const include = [
       {
         model: Categories,
+        as: "cate",
         attributes: ["name"],
       },
       {
@@ -122,6 +123,7 @@ const getDetailProducts = async (req, res) => {
     if (languagecode) {
       include.push({
         model: Pro_translation,
+        as: "translations",
         attributes: ["name", "languagecode", "description"],
         where: { languagecode },
         required: false, // Left join (nghĩa là vẫn lấy product nếu không có bản dịch)
@@ -278,9 +280,7 @@ const getTop5ProductsByMonth = async (req, res) => {
 
     // Step 3: Merge totalSold back into products
     const result = topProducts.map((product) => {
-      const sales = topProductIds.find(
-        (item) => item.productid === product.id
-      );
+      const sales = topProductIds.find((item) => item.productid === product.id);
       return {
         ...product.toJSON(),
         totalSold: sales ? sales.totalSold : 0,
