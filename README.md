@@ -1,117 +1,146 @@
-# 🏸 Backend Website Bán Đồ Cầu Lông
+# 🏸 Badminton Gear Backend API
 
-Đây là dự án **Back-end cho hệ thống bán hàng cầu lông online**, được xây dựng nhằm phục vụ nhu cầu mua sắm các sản phẩm như vợt, giày, quần áo, phụ kiện,... Dự án hỗ trợ đầy đủ các chức năng cho cả **khách hàng** và **quản trị viên**, bao gồm: quản lý sản phẩm, giỏ hàng, đơn hàng, thanh toán online (VNPay, PayPal), chatbot hỗ trợ, đánh giá, xác thực người dùng (JWT), gửi email, báo cáo,... Hệ thống sử dụng các công nghệ như **Node.js**, **Express**, **MySQL**, **Sequelize**, cùng với các tích hợp như **Gemini AI**, **NodeMailer**, **VNPay**, **PayPal**.
+Đây là hệ thống **Backend RESTful API** phục vụ cho website bán đồ cầu lông, được xây dựng trên nền tảng **Node.js** và **Express**. Hệ thống cung cấp đầy đủ các tính năng thương mại điện tử, tích hợp trí tuệ nhân tạo (AI) để tư vấn khách hàng và hỗ trợ đa ngôn ngữ.
+
+## 🌟 Tính năng nổi bật
+
+### 🤖 AI & Tự động hóa
+- **Chatbot thông minh (Gemini 2.5 Flash)**:
+  - Sử dụng mô hình `gemini-2.5-flash` và `text-embedding-004` của Google.
+  - Tích hợp **LangChain** và **HNSWLib** (Vector Store) để tìm kiếm ngữ nghĩa cực nhanh.
+  - **Tự động nhận diện ngôn ngữ**: Trả lời tiếng Việt hoặc tiếng Anh dựa trên câu hỏi của khách hàng.
+  - Có bộ nhớ lịch sử chat (Context-aware).
+- **Hệ thống dịch thuật sản phẩm (Pro Translation)**:
+  - Tự động dịch thông tin sản phẩm sang nhiều ngôn ngữ khác nhau.
+  - API quản lý bản dịch chuyên nghiệp.
+
+### 💬 Giao tiếp Real-time
+- **Socket.io Integration**:
+  - Chat trực tuyến thời gian thực giữa Khách hàng và Admin.
+  - Phân chia phòng chat (Room) theo User ID.
+  - Admin có thể tham gia vào các phòng chat cụ thể để hỗ trợ.
+
+### 🛒 Thương mại điện tử
+- **Quản lý sản phẩm & Danh mục**: CRUD sản phẩm, hình ảnh, kho hàng (GRN).
+- **Giỏ hàng & Đơn hàng**: Quy trình đặt hàng, quản lý trạng thái đơn hàng.
+- **Thanh toán trực tuyến**: Tích hợp cổng thanh toán **VNPay** và **PayPal**.
+- **Khuyến mãi (Promotions)**: Quản lý mã giảm giá, chương trình Flash Sale.
+- **Đánh giá (Reviews)**: Cho phép người dùng đánh giá sản phẩm.
+
+### 🔐 Bảo mật & Xác thực
+- Xác thực người dùng bằng **JWT (JSON Web Token)**.
+- Phân quyền (RBAC): Admin, Staff, User.
+
+### 🌍 Đa ngôn ngữ & Dịch thuật (AI-Powered)
+Hệ thống không chỉ hỗ trợ đa ngôn ngữ tĩnh mà còn tích hợp AI để tự động hóa quy trình bản địa hóa nội dung:
+- **Dịch thuật tự động với Google Gemini 2.5 Flash**:
+  - Tích hợp `translateJSON` service giúp dịch nguyên vẹn cấu trúc dữ liệu phức tạp (Object/Array) mà không làm hỏng định dạng.
+  - Tự động dịch thông tin sản phẩm (Tên, Mô tả) từ ngôn ngữ gốc sang ngôn ngữ đích chỉ với một API call.
+- **Quản lý nội dung đa ngữ (Pro Translation)**:
+  - Lưu trữ riêng biệt các bản dịch của sản phẩm theo mã ngôn ngữ (`languagecode`), giúp mở rộng thị trường dễ dàng.
+
+### 🔔 Hệ thống Thông báo Thông minh
+Hệ thống thông báo được thiết kế theo hướng "Localization-first" và cá nhân hóa:
+- **Thông báo đa ngôn ngữ (i18n)**:
+  - Sử dụng cơ chế `messagekey` kết hợp với tham số động (Dynamic Params) như tên người dùng, mã giảm giá. Nội dung thông báo sẽ được dịch tự động sang ngôn ngữ người dùng đang sử dụng khi truy xuất.
+- **Targeting Logic (Phân loại đối tượng)**:
+  - **Cá nhân:** Gửi thông báo đến từng user cụ thể.
+- **Quản lý trạng thái**: Theo dõi trạng thái đã đọc/chưa đọc (`isread`) và đếm số lượng thông báo mới realtime.
+---
+
+## 🛠️ Công nghệ sử dụng
+
+| Lĩnh vực | Công nghệ |
+| :--- | :--- |
+| **Core** | Node.js, Express.js |
+| **Database** | MySQL, Sequelize ORM |
+| **Real-time** | Socket.io |
+| **AI & LLM** | LangChain, Google Gemini AI (Google GenAI SDK) |
+| **Vector DB** | HNSWLib (In-memory vector store) |
+| **Payment** | VNPay, PayPal SDK |
+| **Upload** | Multer, Cloudinary |
+| **Mail** | Nodemailer |
 
 ---
-## 🔧 Chức năng hệ thống
 
-### 🛒 Khách hàng
-- Quản lý giỏ hàng
-- Đánh giá sản phẩm
-- Chatbot hỗ trợ (Gemini AI)
-- Thanh toán online:
-  - VNPay
-  - PayPal
+## 🚀 Hướng dẫn cài đặt & Chạy dự án
 
-### 🛠️ Quản trị viên
-- Quản lý loại sản phẩm
-- Quản lý sản phẩm
-- Quản lý đơn hàng
-- Quản lý người dùng
-- Quản lý mã khuyến mãi
-- Quản lý kho hàng
-- Xem báo cáo (doanh thu, đơn hàng)
+### 1. Yêu cầu hệ thống
+- **Node.js**: Phiên bản 18+ (Khuyên dùng bản LTS mới nhất).
+- **MySQL**: Cơ sở dữ liệu đã được cài đặt và đang chạy.
+- **Yarn**: Trình quản lý gói (`npm install -g yarn`).
 
-### 👥 Dùng chung (Khách hàng & Quản trị viên)
-- Xác thực người dùng (JWT)
-- Quản lý thông tin cá nhân
+### 2. Cài đặt
 
----
-## 🚀 Hướng dẫn cài đặt
-
-**Bước 1:** Clone repo từ GitHub về máy:
-
+**Bước 1:** Clone dự án
 ```bash
-https://github.com/NotASleeper/BE_BadmintonWeb.git
+git clone https://github.com/NotASleeper/Improved_BE_Badminton.git
+cd BE_BadmintonWeb
 ```
-**Bước 2:** Mở thư mục vừa tải về trong Visual Studio Code.
-**Bước 3:** Mở terminal và cài đặt các thư viện cần thiết:
+**Bước 2:** Cài đặt các thư viện (dependencies)
 ```bash
-yarn add sequelize mysql2 express
+yarn install
 ```
+**Bước 3:** Cấu hình database
+- Mở file config/config.json và cập nhật thông tin đăng nhập MySQL của bạn (username, password, database name).
+- Tạo database rỗng trong MySQL Workbench trùng tên với config.
+**Bước 4:** Chạy Migrations & Seeding (Tạo bảng & Dữ liệu mẫu)
 ```bash
-yarn add nodemon --dev
-```
-```bash
-yarn add sequelize-cli --dev
-```
-**Bước 4:** Mở MySQL Workbench và tạo một cơ sở dữ liệu mới.
-**Bước 5:** Mở file config/config.json, sửa các thông tin kết nối cơ sở dữ liệu:
-```json
-{
-  "username": "tên đăng nhập MySQL của bạn",
-  "password": "mật khẩu MySQL của bạn",
-  "database": "tên cơ sở dữ liệu vừa tạo"
-}
-```
-**Bước 6:** Thực hiện migrate dữ liệu:
-```bash
+# Tạo bảng
 npx sequelize db:migrate
-```
-**Bước 7:** Seed dữ liệu mẫu:
-```bash
+
+# Thêm dữ liệu mẫu (Roles, Users, Products...)
 npx sequelize db:seed:all
 ```
-**Bước 8:** Chạy server:
+**Bước 5:**Cấu hình biến môi trường Tạo file .env tại thư mục gốc và điền các thông tin sau (Cập nhật key của bạn):
+```bash
+CLOUDINARY_NAME=your_cloudinary_name
+CLOUDINARY_KEY=your_cloudinary_key
+CLOUDINARY_SECRET=your_cloudinary_secret
+
+EMAIL_USERNAME=your_email
+EMAIL_PASSWORD=your_app_password
+
+VNPAY_SECRET=your_vnpay_secret
+VNPAY_TMN_CODE=your_vnpay_tmncode
+
+CHATBOT_API_KEY=your_google_gemini_api_key_1
+GOOGLE_API_KEY=your_google_gemini_api_key_2
+
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_SECRET=your_paypal_secret
+PAYPAL_BASE_URL=https://api-m.sandbox.paypal.com
+```
+### 3. Chạy server
 ```bash
 yarn dev
 ```
- Khi server đã chạy, mở trình duyệt và truy cập: http://localhost:3030
-**Bước 9:** Tạo thư mục gốc tạo file .env vào cập nhập các khóa vào
-```bash
-CLOUDINARY_NAME=<cloudinary_account_name>
-CLOUDINARY_KEY=<cloudinary_api_key>
-CLOUDINARY_SECRET=<cloudinary_api_secret>
+Server sẽ khởi chạy tại: http://localhost:3000
 
-EMAIL_USERNAME=<your_email_address>
-EMAIL_PASSWORD=<your_email_app_password>
-
-VNPAY_SECRET=<vnpay_hash_secret>
-VNPAY_TMN_CODE=<vnpay_terminal_code>
-
-CHATBOT_API_KEY=<gemini_or_ai_api_key>
-
-PAYPAL_CLIENT_ID=<paypal_client_id>
-PAYPAL_SECRET=<paypal_client_secret>
-PAYPAL_BASE_URL=https://api-m.sandbox.paypal.com
-```
 ---
-## 🚀 Ngôn ngữ, công nghệ ứng dụng
 
-### Back-end
-![NodeJS](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white&style=for-the-badge)
-![ExpressJS](https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=white&style=for-the-badge)
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white&style=for-the-badge)
+### 📂 Cấu trúc API (Endpoints chính)
+Tất cả API đều có prefix /api/v1.
 
-### ORM
-![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?logo=sequelize&logoColor=white&style=for-the-badge)
+### **1. Auth & Users**
+- `POST` **/users**: Đăng ký tài khoản.
+- `POST` **/users/login**: Đăng nhập (Trả về JWT).
+- `GET` **/users/:userid**: Lấy thông tin người dùng hiện tại (Yêu cầu Header `token`).
 
-### Xác thực & Bảo mật
-![JWT](https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens&logoColor=white&style=for-the-badge)
+### **2. Products (Sản phẩm)**
+- `GET` **/products**: Lấy tất cả sản phẩm (Có phân trang).
+- `GET` **/products/:id**: Lấy chi tiết sản phẩm theo ID.
+- `GET` **/best-sale/top5**: Lấy danh sách 5 sản phẩm được bán chạy nhất trong tháng.
 
-### Gửi Email
-![NodeMailer](https://img.shields.io/badge/NodeMailer-3C4646?logo=gmail&logoColor=white&style=for-the-badge)
+### **3. Chatbot & Translation (AI Features)**
+- `POST` **/users/chatbot**: Chat với Bot Gemini AI.
+- `GET` **/chats**: Xem lại lịch sử tin nhắn.
+- `POST` **/protranslations/translate**: Dùng AI dịch thông tin sản phẩm hỗ trợ Admin.
 
-### Thanh toán
-![VNPay](https://img.shields.io/badge/VNPay-DA251D?style=for-the-badge&logoColor=white)
-![PayPal](https://img.shields.io/badge/PayPal-00457C?logo=paypal&logoColor=white&style=for-the-badge)
-
-### AI tích hợp
-![GeminiAI](https://img.shields.io/badge/Gemini_AI-4285F4?logo=google&logoColor=white&style=for-the-badge)
-
-### Công cụ dev
-![Yarn](https://img.shields.io/badge/Yarn-2C8EBB?logo=yarn&logoColor=white&style=for-the-badge)
-![Nodemon](https://img.shields.io/badge/Nodemon-76D04B?logo=nodemon&logoColor=black&style=for-the-badge)
+### **4. Orders & Cart**
+- `GET` **/carts/:userid**: Xem giỏ hàng.
+- `POST` **/carts**: Thêm vào giỏ hàng.
+- `POST` **/carts/checkout**: Checkout (Tạo đơn hàng).
 
 ---
 ## 📂 Tài nguyên liên quan
