@@ -27,6 +27,11 @@ const connection = (io) => {
     // Tự động cho user join vào room riêng của họ
     const userRoom = `user_${socket.user.userid}`;
     socket.join(userRoom);
+    if (socket.user.roleid !== 2) {
+      console.log(
+        `User ${socket.user.username} (Room ID: ${userRoom}) connected`
+      );
+    }
 
     // Nếu là Admin (roleid = 2), cho phép join vào các room khác để hỗ trợ
     if (socket.user.roleid === 2) {
@@ -42,7 +47,7 @@ const connection = (io) => {
       try {
         // Lưu vào DB
         await Chats.create({
-          room: userRoom,
+          room: data.room,
           senderid: data.senderid,
           senderrole: data.senderrole,
           content: data.content,
