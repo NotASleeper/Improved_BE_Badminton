@@ -1,4 +1,5 @@
-const { Flashsales } = require("../models");
+const { Flashsales, Flashsaledetails } = require("../models");
+const { Op } = require("sequelize");
 
 const createFlashsale = async (req, res) => {
   try {
@@ -73,10 +74,35 @@ const deleteFlashsale = async (req, res) => {
   }
 };
 
+const isProductinFlashsale = async (productid) => {
+  try {
+    const now = new Date();
+    const flashsale = await Flashsales.findOne({
+      where: {
+        start: { [Op.lte]: now },
+        end: { [Op.gte]: now },
+      },
+    });
+    if (!flashsale) return false;
+
+    const flashsaledetail = await Flashsaledetails.findOne({
+      where: {
+        flashsaleid: flashsale.id,
+        productid: productid,
+      },
+    });
+    if (!flashsaledetail) return false;
+    return flashsaledetail;
+  } catch (error) {
+    return false;
+  }
+};
+
 module.exports = {
   createFlashsale,
   getAllFlashsales,
   getFlashsaleById,
   updateFlashsale,
   deleteFlashsale,
+  isProductinFlashsale,
 };

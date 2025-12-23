@@ -8,6 +8,7 @@ const {
   Pro_translation,
   sequelize,
 } = require("../models");
+const { isProductinFlashsale } = require("./flashsales.controllers");
 
 const createProducts = async (req, res) => {
   const {
@@ -97,7 +98,31 @@ const getAllProducts = async (req, res) => {
       include,
     });
 
-    res.status(200).send(productslist);
+    const enriched = await Promise.all(
+      productslist.map(async (product) => {
+        const json = product.toJSON();
+        const fsd = await isProductinFlashsale(product.id);
+        if (fsd) {
+          const basePrice = product.price;
+          const salePrice =
+            fsd.type === 0
+              ? Math.max(0, basePrice - (basePrice * fsd.value) / 100)
+              : Math.max(0, basePrice - fsd.value);
+          json.flashsale = {
+            id: fsd.id,
+            flashsaleid: fsd.flashsaleid,
+            type: fsd.type,
+            value: fsd.value,
+            sale_price: salePrice,
+          };
+        } else {
+          json.flashsale = null;
+        }
+        return json;
+      })
+    );
+
+    res.status(200).send(enriched);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -137,7 +162,25 @@ const getDetailProducts = async (req, res) => {
     if (!detailProducts) {
       return res.status(404).send({ message: "Product not found" });
     }
-    res.status(200).send(detailProducts);
+    const fsd = await isProductinFlashsale(detailProducts.id);
+    const json = detailProducts.toJSON();
+    if (fsd) {
+      const basePrice = detailProducts.price;
+      const salePrice =
+        fsd.type === 0
+          ? Math.max(0, basePrice - (basePrice * fsd.value) / 100)
+          : Math.max(0, basePrice - fsd.value);
+      json.flashsale = {
+        id: fsd.id,
+        flashsaleid: fsd.flashsaleid,
+        type: fsd.type,
+        value: fsd.value,
+        sale_price: salePrice,
+      };
+    } else {
+      json.flashsale = null;
+    }
+    res.status(200).send(json);
   } catch (error) {
     res.status(500).send(error);
   }
