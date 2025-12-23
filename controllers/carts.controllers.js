@@ -6,6 +6,7 @@ const {
   Orders,
   Users,
   Pro_translation,
+  Flashsaledetails,
 } = require("../models");
 const { calculatePromotionValue } = require("./promotions.controllers");
 const { isProductinFlashsale } = require("./flashsales.controllers");
@@ -156,7 +157,10 @@ const CheckoutCarts = async (req, res) => {
       if (!promotion) {
         return res.status(404).send("Promotion code not found");
       } else {
-        if (promotion.status === 0) {
+        if (
+          promotion.status === 0 ||
+          promotion.max_uses === promotion.used_count
+        ) {
           return res.status(404).send("Promotion code is not valid");
         }
       }
@@ -208,16 +212,43 @@ const CheckoutCarts = async (req, res) => {
       quantity: item.quantity,
     }));
     await Ordersdetail.bulkCreate(orderDetails);
-    
+
     // Cập nhật lại quantity của từng sản phẩm
-    // for (const item of listItems) {
-    //   if (item.Product && typeof item.Product.quantity === "number") {
-    //     await Products.update(
-    //       { quantity: item.Product.quantity - item.quantity },
-    //       { where: { id: item.productid } }
-    //     );
-    //   }
-    // }
+    for (const item of listItems) {
+      if (item.Product && typeof item.Product.quantity === "number") {
+        await Products.update(
+          { quantity: item.Product.quantity - item.quantity },
+          { where: { id: item.productid } }
+        );
+      }
+    }
+
+    // Cập nhật used_count của promotion nếu có sử dụng
+    if (promotion && promotioncode !== "") {
+      await Promotions.update(
+        { used_count: promotion.used_count + 1 },
+        { where: { id: promotion.id } }
+      );
+    }
+
+    // Cập nhật used_count của flash sale detail nếu có sản phẩm flash sale
+    for (const item of itemsWithFlashsale) {
+      if (item.flashsaleDetail) {
+        await Flashsaledetails.update(
+          { used_count: item.flashsaleDetail.used_count + item.quantity },
+          { where: { id: item.flashsaleDetail.id } }
+        );
+      }
+    }
+
+    // Cập nhật loyalty point của khách hàng (1 point/đơn hàng)
+    const user = await Users.findByPk(userid);
+    if (user) {
+      await Users.update(
+        { loyaltypoint: (user.loyaltypoint || 0) + newOrder.totalprice / 1000 },
+        { where: { id: userid } }
+      );
+    }
 
     await Carts.destroy({
       where: {

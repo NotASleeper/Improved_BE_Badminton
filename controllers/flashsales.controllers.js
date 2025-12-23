@@ -92,6 +92,7 @@ const isProductinFlashsale = async (productid) => {
       },
     });
     if (!flashsaledetail) return false;
+    if (flashsaledetail.max_uses === flashsaledetail.used_count) return false;
     return flashsaledetail;
   } catch (error) {
     return false;
