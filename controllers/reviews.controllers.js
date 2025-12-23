@@ -10,11 +10,6 @@ const createReviews = async (req, res) => {
     const user = await Users.findOne({
       where: { id: userid },
     });
-    if (!user || user.roleid !== 1) {
-      return res
-        .status(403)
-        .send({ message: "Bạn không có quyền đánh giá sản phẩm này!" });
-    }
     const orderDetail = await Ordersdetail.findOne({
       where: { productid },
       include: [
