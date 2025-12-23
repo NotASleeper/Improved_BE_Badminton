@@ -1,4 +1,10 @@
-const { GRNdetails, Products, GRN, Pro_translation } = require("../models");
+const {
+  GRNdetails,
+  Products,
+  GRN,
+  Pro_translation,
+  Imagesproduct,
+} = require("../models");
 
 const createGRNDetails = async (req, res) => {
   try {
@@ -46,6 +52,10 @@ const getlistGRNDetails = async (req, res) => {
               attributes: ["languagecode", "name", "description"],
               where: { languagecode: lang },
             },
+            {
+              model: Imagesproduct,
+              attributes: ["url"],
+            },
           ],
         },
       ],
@@ -75,6 +85,10 @@ const getGRNDetailsById = async (req, res) => {
               as: "translations",
               attributes: ["languagecode", "name", "description"],
               where: { languagecode: lang },
+            },
+            {
+              model: Imagesproduct,
+              attributes: ["url"],
             },
           ],
         },

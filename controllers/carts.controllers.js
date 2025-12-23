@@ -8,6 +8,7 @@ const {
   Pro_translation,
 } = require("../models");
 const { calculatePromotionValue } = require("./promotions.controllers");
+const { isProductinFlashsale } = require("./flashsales.controllers");
 
 const createCarts = async (req, res) => {
   try {
@@ -120,6 +121,31 @@ const CheckoutCarts = async (req, res) => {
     if (listItems.length === 0) {
       return res.status(404).send("No items found in the cart");
     }
+
+    // Kiểm tra flash sale cho từng sản phẩm
+    const itemsWithFlashsale = await Promise.all(
+      listItems.map(async (item) => {
+        const flashsaleDetail = await isProductinFlashsale(item.productid);
+        return {
+          ...item.toJSON(),
+          flashsaleDetail,
+        };
+      })
+    );
+
+    // Kiểm tra xem có sản phẩm nào trong flash sale không
+    const hasFlashsaleProduct = itemsWithFlashsale.some(
+      (item) => item.flashsaleDetail !== false
+    );
+
+    // Không cho phép áp dụng mã giảm giá nếu có sản phẩm flash sale
+    if (hasFlashsaleProduct && promotioncode && promotioncode !== "") {
+      return res.status(400).send({
+        error:
+          "Cannot apply promotion code when cart contains flash sale products",
+      });
+    }
+
     // Kiểm tra xem mã khuyến mãi có hợp lệ không
     const promotion = await Promotions.findOne({
       where: {
@@ -136,9 +162,20 @@ const CheckoutCarts = async (req, res) => {
       }
     }
 
-    // Tính tổng giá trị đơn hàng
-    const totalAmount = listItems.reduce((sum, item) => {
-      return sum + item.quantity * item.Product.price;
+    // Tính tổng giá trị đơn hàng (với flash sale nếu có)
+    const totalAmount = itemsWithFlashsale.reduce((sum, item) => {
+      let itemPrice = item.Product.price;
+
+      // Nếu sản phẩm có flash sale, tính giá theo flash sale
+      if (item.flashsaleDetail) {
+        const fsd = item.flashsaleDetail;
+        itemPrice =
+          fsd.type === 0
+            ? Math.max(0, itemPrice - (itemPrice * fsd.value) / 100)
+            : Math.max(0, itemPrice - fsd.value);
+      }
+
+      return sum + item.quantity * itemPrice;
     }, 0);
 
     // Tạo đơn hàng mới
@@ -171,15 +208,16 @@ const CheckoutCarts = async (req, res) => {
       quantity: item.quantity,
     }));
     await Ordersdetail.bulkCreate(orderDetails);
+    
     // Cập nhật lại quantity của từng sản phẩm
-    for (const item of listItems) {
-      if (item.Product && typeof item.Product.quantity === "number") {
-        await Products.update(
-          { quantity: item.Product.quantity - item.quantity },
-          { where: { id: item.productid } }
-        );
-      }
-    }
+    // for (const item of listItems) {
+    //   if (item.Product && typeof item.Product.quantity === "number") {
+    //     await Products.update(
+    //       { quantity: item.Product.quantity - item.quantity },
+    //       { where: { id: item.productid } }
+    //     );
+    //   }
+    // }
 
     await Carts.destroy({
       where: {

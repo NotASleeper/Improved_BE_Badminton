@@ -136,6 +136,7 @@ const updateOrder = async (req, res) => {
         messagekey: "order.confirmed",
         relatedid: detailOrder.id,
       });
+      // Cập nhật số lượng sản phẩm trong kho
     }
 
     // Đơn hàng bị hủy
