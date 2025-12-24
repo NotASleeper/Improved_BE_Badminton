@@ -1,4 +1,10 @@
-const { Products, FlashSales, Flashsaledetails, Pro_translation } = require("../models");
+const {
+  Products,
+  FlashSales,
+  Flashsaledetails,
+  Pro_translation,
+  Imagesproduct,
+} = require("../models");
 
 const createFlashsaleDetail = async (req, res) => {
   try {
@@ -35,6 +41,10 @@ const getAllFlashsaleDetails = async (req, res) => {
               attributes: ["languagecode", "name", "description"],
               where: { languagecode: lang },
             },
+            {
+              model: Imagesproduct,
+              attributes: ["url"],
+            },
           ],
         },
       ],
@@ -64,6 +74,10 @@ const getDetailFlashsalebyid = async (req, res) => {
               as: "translations",
               attributes: ["languagecode", "name", "description"],
               where: { languagecode: lang },
+            },
+            {
+              model: Imagesproduct,
+              attributes: ["url"],
             },
           ],
         },
