@@ -1,12 +1,13 @@
 const { Payment, Orders } = require("../models");
 const { PaymentPaypal, capturePayment } = require("../services/paypal");
 const { paymentVNPAY } = require("../services/vnpay");
+const { createNotification } = require("../services/notification");
 const crypto = require("crypto");
 require("dotenv").config();
 
 const createPayment = async (req, res) => {
   try {
-    const { orderid, paymentmethod } = req.body;
+    const { orderid, paymentmethod, returnurl } = req.body;
     if (paymentmethod === "cash") {
       const newPayment = await Payment.create({
         orderid,
@@ -21,7 +22,12 @@ const createPayment = async (req, res) => {
       if (!payingorder) {
         return res.status(404).send({ message: "Order not found" });
       }
-      await PaymentPaypal(payingorder.id, payingorder.totalprice, res);
+      await PaymentPaypal(
+        payingorder.id,
+        payingorder.totalprice,
+        returnurl,
+        res
+      );
     } else {
       const payingorder = await Orders.findOne({
         where: { id: orderid },
@@ -29,7 +35,12 @@ const createPayment = async (req, res) => {
       if (!payingorder) {
         return res.status(404).send({ message: "Order not found" });
       }
-      await paymentVNPAY(payingorder.id, payingorder.totalprice, res);
+      await paymentVNPAY(
+        payingorder.id,
+        payingorder.totalprice,
+        returnurl,
+        res
+      );
     }
   } catch (error) {
     console.log(error);

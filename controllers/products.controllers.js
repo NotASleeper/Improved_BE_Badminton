@@ -20,26 +20,24 @@ const createProducts = async (req, res) => {
     name,
     description,
   } = req.body;
-  const t = await sequelize.transaction();
+
   try {
-    const product = await Products.create(
-      { categoriesid, price, brand, quantity },
-      { transaction: t }
-    );
+    const product = await Products.create({
+      categoriesid,
+      price,
+      brand,
+      quantity,
+    });
 
     if (languagecode && name) {
-      await Pro_translation.create(
-        {
-          productid: product.id,
-          languagecode,
-          name,
-          description: description || null,
-        },
-        { transaction: t }
-      );
+      await Pro_translation.create({
+        productid: product.id,
+        languagecode,
+        name,
+        description: description || null,
+      });
     }
 
-    await t.commit();
     const created = await Products.findOne({
       where: { id: product.id },
       include: [
@@ -52,7 +50,6 @@ const createProducts = async (req, res) => {
     });
     res.status(201).send(created);
   } catch (error) {
-    await t.rollback();
     res.status(500).send(error);
   }
 };
@@ -197,11 +194,11 @@ const updateProducts = async (req, res) => {
     name,
     description,
   } = req.body;
-  const t = await sequelize.transaction();
+  
   try {
     const product = await Products.findOne({ where: { id } });
     if (!product) {
-      await t.rollback();
+      
       return res.status(404).send({ message: "Product not found" });
     }
 
@@ -214,14 +211,12 @@ const updateProducts = async (req, res) => {
     if (languagecode && (name !== undefined || description !== undefined)) {
       const trans = await Pro_translation.findOne({
         where: { productid: id, languagecode },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
       });
 
       if (trans) {
         if (name !== undefined) trans.name = name;
         if (description !== undefined) trans.description = description;
-        await trans.save({ transaction: t });
+        await trans.save();
       } else {
         await Pro_translation.create(
           {
@@ -229,13 +224,11 @@ const updateProducts = async (req, res) => {
             languagecode,
             name: name || "",
             description: description || null,
-          },
-          { transaction: t }
+          }
         );
       }
     }
 
-    await t.commit();
 
     const updated = await Products.findOne({
       where: { id },
