@@ -285,6 +285,276 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
+        {
+          productid: 1,
+          languagecode: "en",
+          name: "Yonex Nanoflare 700 Pro 2024 Badminton Racket",
+          description:
+            "The Yonex Nanoflare 700 Pro 2024 is an upgraded version of the Nanoflare 700 series, focusing on flexible gameplay, fast drive shots, and high-speed shuttle control with superior precision.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 2,
+          languagecode: "en",
+          name: "Yonex Arcsaber 0 Feel Badminton Racket",
+          description:
+            "The Yonex Arcsaber 0 Feel is an affordable racket from Yonex, featuring a balanced index and a super flexible shaft for power support, aimed at beginners who love an all-around playing style.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 3,
+          languagecode: "en",
+          name: "Yonex Astrox 88S Pro 2024 Badminton Racket",
+          description:
+            "The Yonex Astrox 88S Pro 2024 focuses on defensive drives and control. With a 298mm balance point and a stiffer, shorter shaft than usual, it provides agility in exchanges, especially for net play and high-speed drives.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 4,
+          languagecode: "en",
+          name: "Lining Axforce 10 Badminton Racket",
+          description:
+            "The Lining Axforce 10 is a mid-range racket with a balance point of 295 +-5mm, designed for all-around gameplay with a slight offensive edge. The medium-stiff shaft makes it easy for players to get used to and control.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 5,
+          languagecode: "en",
+          name: "Yonex Nanoflare Starbucks Badminton Racket",
+          description:
+            "A collaboration between Yonex and Starbucks. It features two versions: signature coffee green and soft pink, with meticulously crafted details. The racket comes pre-strung for convenience.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 6,
+          languagecode: "en",
+          name: "Yonex Velo 200 Badminton Shoes",
+          description:
+            "The Yonex Velo 200 is an affordable shoe line from Yonex, offering a variety of colors. It is particularly suitable for students and amateur players who enjoy badminton.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 7,
+          languagecode: "en",
+          name: "Yonex Power Cushion Comfort Z3 Women Badminton Shoes",
+          description:
+            "Premium badminton shoes for amateur and professional players seeking maximum comfort and speed. Features an asymmetrical upper design that reduces pressure and provides a wrap-around fit.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 8,
+          languagecode: "en",
+          name: "Kawasaki A3310 Badminton Shoes",
+          description:
+            "A mid-range shoe model designed specifically for badminton lovers, ensuring smoothness and increased movement speed on the court.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 9,
+          languagecode: "en",
+          name: "Lining AYAU005-1 Genuine Badminton Shoes",
+          description:
+            "Genuine Lining badminton shoes with a sporty design and high durability, suitable for professional players.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 10,
+          languagecode: "en",
+          name: "Lining AYTU025-3 Genuine Badminton Shoes",
+          description:
+            "Features a simple and casual color scheme. The upper is made of comfortable, soft material for a good foot feel. The anti-collision toe design helps reduce scratches and protects the toes.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 11,
+          languagecode: "en",
+          name: "Yonex RM2890 Badminton Shirt - Steel Gray",
+          description:
+            "Genuine Yonex badminton shirt, featuring lightweight stretch and breathable material, suitable for competition or training.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 12,
+          languagecode: "en",
+          name: "Yonex A531 Men Badminton Shirt - White Blue",
+          description:
+            "Men's Yonex badminton shirt with a youthful white and blue modern design, offering excellent sweat absorption.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 13,
+          languagecode: "en",
+          name: "Lining 9019 Badminton Skirt - White",
+          description:
+            "Made from high-quality, soft, and stretchy material for comfort. Equipped with a protective inner layer to help female players feel confident during movement.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 14,
+          languagecode: "en",
+          name: "Lining 9019 Badminton Skirt - Black",
+          description:
+            "High-quality, soft, and elastic material providing a smooth feel. Includes a built-in inner safety layer for confident movement on the court.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 15,
+          languagecode: "en",
+          name: "Victor 960 Badminton Shorts - White",
+          description:
+            "Victor 960 shorts featuring good elasticity, perfect sweat absorption, and high durability for long-term use.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 16,
+          languagecode: "en",
+          name: "Yonex 92431 TRM (GC) Badminton Bag",
+          description:
+            "Designed for both style and function with multiple compartments for rackets, shoes, clothing, and accessories to keep you organized and ready for the match.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 17,
+          languagecode: "en",
+          name: "Yonex BAG2329T02 Badminton Bag",
+          description:
+            "Features 2 spacious main compartments for all necessary equipment and an integrated shoe compartment to keep items separate and hygienic.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 18,
+          languagecode: "en",
+          name: "Kamito Cool KMTUI230260 Shoe Bag - Orange",
+          description:
+            "Artistic Kamito logo patterns combined with energetic colors, perfect for active and enthusiastic youth.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 19,
+          languagecode: "en",
+          name: "Yonex 83031 (GC) Badminton Bag",
+          description:
+            "A versatile, compact, and lightweight bag with large storage space. Available in 4 color versions including White/Navy, White/Green, White/Purple, and White/Turquoise.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 20,
+          languagecode: "en",
+          name: "Yonex BAG524B0712Z Badminton Backpack",
+          description:
+            "A stylish and convenient backpack made of durable Polyester fabric with dust and water resistance. Available in 4 different color versions.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 21,
+          languagecode: "en",
+          name: "Victor Doraemon NCS_DRM M Nylon Shuttlecock Tube - Blue",
+          description:
+            "Plastic shuttlecocks featuring a Doraemon themed box, a collaboration between Victor and the famous Japanese animation.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 22,
+          languagecode: "en",
+          name: "Hai Yen S70 Shuttlecock Tube",
+          description:
+            "High-quality shuttlecocks produced on 80% automated lines following BWF standards, ensuring consistent quality and performance.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 23,
+          languagecode: "en",
+          name: "88 Premium Shuttlecock Tube",
+          description:
+            "Premium shuttlecocks made from natural feathers, produced on 80% automated lines following international BWF standards.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 24,
+          languagecode: "en",
+          name: "Hai Anh Pro Shuttlecock Tube",
+          description:
+            "Tournament standard shuttlecocks with 16 natural feathers distributed evenly, processed and anchored in a fan-shaped pattern to create a stable flight path and reduced wobbling.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 25,
+          languagecode: "en",
+          name: "Yonex AS30 Shuttlecock Tube",
+          description:
+            "The official shuttlecock for top international tournaments. Precision-engineered and extensively tested to ensure 100% consistency across all shuttlecocks.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 26,
+          languagecode: "en",
+          name: "Yonex BG 9 Badminton String",
+          description:
+            "A great choice for all levels. High-strength multi-filament nylon provides power support, good shock absorption, and a sharp hitting sound.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 27,
+          languagecode: "en",
+          name: "Felet RigCore 61 Badminton String",
+          description:
+            "Designed with excellent repulsion power, high hitting sound, and high elasticity to provide optimal performance for players.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 28,
+          languagecode: "en",
+          name: "Lining L9 Badminton String",
+          description:
+            "Made from nylon polymer with a 0.75mm thickness. Highly durable and cost-effective, ideal for beginners or those seeking longevity.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 29,
+          languagecode: "en",
+          name: "Head Extreme Elite 2023 Pickleball Paddle",
+          description:
+            "Based on the Head Extreme technology line at an affordable price, this paddle helps players improve skills and performance significantly.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          productid: 30,
+          languagecode: "en",
+          name: "Head Pack Flash Pickleball Set",
+          description:
+            "Includes 2 Head Pack Flash paddles and 2 Pickleballs, a convenient and cost-saving set for those starting with the sport.",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ],
       {}
     );

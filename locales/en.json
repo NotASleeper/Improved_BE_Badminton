@@ -1,5 +1,28 @@
 {
-  "order.status_changed": "Đơn hàng {{order_id}} đã thay đổi trạng thái: {{status}}",
-  "review.new_response": "{{user_name}} have commented on your post",
-  "review.rejected": "Bình luận của bạn đã bị từ chối do vi phạm nội quy cộng đồng."
+  "order.created": "Your order #{{order_id}} has been created successfully with a total of {{total_price}}",
+  "order.confirmed": "Order #{{order_id}} has been confirmed and is being prepared",
+  "order.processing": "Order #{{order_id}} is being processed",
+  "order.shipping": "Order #{{order_id}} is on its way to you",
+  "order.delivered": "Order #{{order_id}} was delivered successfully",
+  "order.cancelled": "Order #{{order_id}} has been cancelled. Reason: {{reason}}",
+  "order.returned": "Return request for order #{{order_id}} has been received",
+  "order.refunded": "Order #{{order_id}} has been refunded {{refund_amount}}",
+  "order.payment_failed": "Payment for order #{{order_id}} failed. Please try again",
+  "order.payment_success": "Payment for order #{{order_id}} succeeded. Thank you!",
+
+  "review.new": "{{user_name}} commented on product {{product_name}}",
+  "review.new_response": "{{user_name}} replied to your comment",
+  "review.approved": "Your review of {{product_name}} has been approved",
+  "review.rejected": "Your review of {{product_name}} was rejected for violating community guidelines",
+  "review.helpful": "{{user_name}} marked your review as helpful",
+  "review.mentioned": "{{user_name}} mentioned you in a comment",
+
+  "promotion.new": "🎉 You received discount code {{code}} worth {{value}}",
+  "promotion.exclusive": "🎁 Special offer just for you: {{code}} - Save {{value}}",
+  "promotion.expiring": "⏰ Code {{code}} expires on {{expiry_date}}. Use it now!",
+  "promotion.applied": "Code {{code}} applied to order #{{order_id}}. You saved {{discount_amount}}",
+  "promotion.birthday": "🎂 Happy Birthday! Enjoy code {{code}} for {{value}} off",
+  "promotion.loyalty": "💎 You collected {{points}} points! Get code {{code}} for {{value}} off",
+  "promotion.flash_sale": "⚡ Flash Sale! Save {{value}} on orders from {{min_order}}. Code: {{code}}",
+  "promotion.welcome": "Welcome to our store! Use code {{code}} on your first order"
 }

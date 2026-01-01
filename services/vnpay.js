@@ -7,7 +7,7 @@ const {
 } = require("vnpay");
 require("dotenv").config();
 
-const paymentVNPAY = async (orderid, totalprice, res) => {
+const paymentVNPAY = async (orderid, totalprice, returnurl, res) => {
   const vnpay = new VNPay({
     tmnCode: process.env.VNPAY_TMN_CODE, // Your TMN code
     secureSecret: process.env.VNPAY_SECRET, // Your secure secret
@@ -29,7 +29,7 @@ const paymentVNPAY = async (orderid, totalprice, res) => {
     vnp_TxnRef: orderid, // Unique transaction reference
     vnp_OrderInfo: `Payment for order ${orderid}`, // Description of the transaction
     vnp_OrderType: ProductCode.Other,
-    vnp_ReturnUrl: `http://localhost:3000/api/v1/payment/check-payment-vnpay`,
+    vnp_ReturnUrl: `${returnurl}/api/v1/payment/check-payment-vnpay`,
     vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
     vnp_CreateDate: dateFormat(new Date()), // Current date in yyyymmddHHmmss format
     vnp_ExpireDate: dateFormat(tomorrow),

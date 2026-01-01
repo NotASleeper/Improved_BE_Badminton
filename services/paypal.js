@@ -15,7 +15,7 @@ async function generateAccessToken() {
   return response.data.access_token;
 }
 
-const PaymentPaypal = async (orderid, totalprice, res) => {
+const PaymentPaypal = async (orderid, totalprice, returnurl, res) => {
   const accessToken = await generateAccessToken();
   const response = await axios({
     url: process.env.PAYPAL_BASE_URL + "/v2/checkout/orders",
@@ -41,7 +41,7 @@ const PaymentPaypal = async (orderid, totalprice, res) => {
         },
       ],
       application_context: {
-        return_url: `http://localhost:3000/api/v1/payment/paypal/check-payment-paypal?orderid=${orderid}`,
+        return_url: `${returnurl}/api/v1/payment/paypal/check-payment-paypal?orderid=${orderid}`,
         cancel_url: `http://localhost:3030/paymentfailed?orderId=${orderid}`,
         shipping_preference: "NO_SHIPPING", // Không yêu cầu địa chỉ giao hàng
         user_action: "PAY_NOW", // Hiển thị nút thanh toán ngay
