@@ -41,9 +41,10 @@ const createProducts = async (req, res) => {
     const created = await Products.findOne({
       where: { id: product.id },
       include: [
-        { model: Categories, attributes: ["name"] },
+        { model: Categories, as: "cate", attributes: ["name"] },
         {
           model: Pro_translation,
+          as: "translations",
           attributes: ["languagecode", "name", "description"],
         },
       ],
@@ -194,11 +195,10 @@ const updateProducts = async (req, res) => {
     name,
     description,
   } = req.body;
-  
+
   try {
     const product = await Products.findOne({ where: { id } });
     if (!product) {
-      
       return res.status(404).send({ message: "Product not found" });
     }
 
@@ -206,7 +206,7 @@ const updateProducts = async (req, res) => {
     if (price !== undefined) product.price = price;
     if (brand !== undefined) product.brand = brand;
     if (quantity !== undefined) product.quantity = quantity;
-    await product.save({ transaction: t });
+    await product.save();
 
     if (languagecode && (name !== undefined || description !== undefined)) {
       const trans = await Pro_translation.findOne({
@@ -218,24 +218,22 @@ const updateProducts = async (req, res) => {
         if (description !== undefined) trans.description = description;
         await trans.save();
       } else {
-        await Pro_translation.create(
-          {
-            productid: id,
-            languagecode,
-            name: name || "",
-            description: description || null,
-          }
-        );
+        await Pro_translation.create({
+          productid: id,
+          languagecode,
+          name: name || "",
+          description: description || null,
+        });
       }
     }
-
 
     const updated = await Products.findOne({
       where: { id },
       include: [
-        { model: Categories, attributes: ["name"] },
+        { model: Categories, as: "cate", attributes: ["name"] },
         {
           model: Pro_translation,
+          as: "translations",
           attributes: ["languagecode", "name", "description"],
           where: languagecode ? { languagecode } : undefined,
           required: false,
@@ -245,7 +243,6 @@ const updateProducts = async (req, res) => {
 
     res.status(200).send(updated);
   } catch (error) {
-    await t.rollback();
     res.status(500).send(error);
   }
 };
