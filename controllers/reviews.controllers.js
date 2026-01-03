@@ -99,7 +99,8 @@ const getDetailReviews = async (req, res) => {
 
 const updateReviews = async (req, res) => {
   const { id } = req.params;
-  const { userid, rating, content, productid, orderid, prereviewid } = req.body;
+  const { userid, rating, content, productid, orderid, prereviewid, status } =
+    req.body;
   try {
     const detailReviews = await Reviews.findOne({
       where: { id },
@@ -110,8 +111,22 @@ const updateReviews = async (req, res) => {
     detailReviews.productid = productid;
     detailReviews.orderid = orderid;
     detailReviews.prereviewid = prereviewid;
+    detailReviews.status = status;
     await detailReviews.save();
     res.status(200).send(detailReviews);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const getAllReviewsbystatus = async (req, res) => {
+  try {
+    const { status } = req.query;
+    const whereClause = status !== undefined ? { status } : {};
+    const reviewsList = await Reviews.findAll({
+      where: whereClause,
+    });
+    res.status(200).send(reviewsList);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -136,4 +151,5 @@ module.exports = {
   getDetailReviews,
   updateReviews,
   deleteReviews,
+  getAllReviewsbystatus,
 };
