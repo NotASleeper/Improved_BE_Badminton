@@ -205,13 +205,15 @@ const calculatePromotionValue = async (promotion, orderTotal, userid) => {
   const now = new Date();
   const user = await Users.findOne({ where: { id: userid } });
 
-  if (!promotion || promotion.status !== 1) {
+  if (!promotion || Number(promotion.status) !== 3) {
     return 0;
   }
-  if (promotion.start > now || promotion.end < now) {
+  const startDate = new Date(promotion.start);
+  const endDate = new Date(promotion.end);
+  if (startDate > now || endDate < now) {
     return 0;
   }
-  if (promotion.userid && promotion.userid !== userid) {
+  if (promotion.userid && Number(promotion.userid) !== Number(userid)) {
     return 0;
   }
 
@@ -254,9 +256,9 @@ const suggestedPromotions = async (req, res) => {
 
     const orderValue = parseFloat(orderTotal);
 
-    // Lấy tất cả promotion đang active
+    // Lấy tất cả promotion đang active (status = 3)
     const allPromotions = await Promotions.findAll({
-      where: { status: 1 },
+      where: { status: 3 },
       raw: true,
     });
 
