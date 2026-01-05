@@ -44,7 +44,7 @@ httpServer.listen(PORT, async () => {
   try {
     await sequelize.authenticate();
     console.log("Kết nối thành công đến cơ sở dữ liệu MySQL.");
-    await chatbotService.initVectorStore();
+    // await chatbotService.initVectorStore();
   } catch (error) {
     console.error("Không thể kết nối đến cơ sở dữ liệu MySQL:", error);
   }

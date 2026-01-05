@@ -131,7 +131,7 @@ const updateOrder = async (req, res) => {
     // Đơn hàng được xác nhận
     if (status === 1 && oldStatus !== 1) {
       await createNotification({
-        userid: userid,
+        userid: detailOrder.userid,
         type: "order",
         messagekey: "order.confirmed",
         relatedid: detailOrder.id,
@@ -142,7 +142,7 @@ const updateOrder = async (req, res) => {
     // Đơn hàng bị hủy
     if (status === -1 && oldStatus !== -1) {
       await createNotification({
-        userid: userid,
+        userid: detailOrder.userid,
         type: "order",
         messagekey: "order.canceled",
         relatedid: detailOrder.id,
@@ -152,7 +152,7 @@ const updateOrder = async (req, res) => {
     // Đơn hàng đã được giao
     if (delivered !== null && oldDelivered === null) {
       await createNotification({
-        userid: userid,
+        userid: detailOrder.userid,
         type: "order",
         messagekey: "order.delivered",
         relatedid: detailOrder.id,
@@ -162,7 +162,7 @@ const updateOrder = async (req, res) => {
     // Đơn hàng đang vận chuyển
     if (shipping !== null && oldShipping === null) {
       await createNotification({
-        userid: userid,
+        userid: detailOrder.userid,
         type: "order",
         messagekey: "order.shipping",
         relatedid: detailOrder.id,
@@ -172,7 +172,7 @@ const updateOrder = async (req, res) => {
     // Đơn hàng đang được xử lý
     if (process !== null && oldProcess === null) {
       await createNotification({
-        userid: userid,
+        userid: detailOrder.userid,
         type: "order",
         messagekey: "order.processing",
         relatedid: detailOrder.id,
