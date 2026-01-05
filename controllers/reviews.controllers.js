@@ -1,4 +1,4 @@
-const { Reviews, Users, Orders, Ordersdetail } = require("../models");
+const { Reviews, Users, Orders, Ordersdetail, Products } = require("../models");
 const { censorContent } = require("../services/censorship.js");
 const { createNotification } = require("../services/notification.js");
 
@@ -125,6 +125,7 @@ const getAllReviewsbystatus = async (req, res) => {
     const whereClause = status !== undefined ? { status } : {};
     const reviewsList = await Reviews.findAll({
       where: whereClause,
+      include: [{ model: Users }, { model: Products }],
     });
     res.status(200).send(reviewsList);
   } catch (error) {
