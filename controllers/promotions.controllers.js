@@ -147,10 +147,10 @@ const deletePromotions = async (req, res) => {
   }
 };
 
-const calculatePromotionValue = (promotion, orderTotal, userid) => {
+const calculatePromotionValue = async (promotion, orderTotal, userid) => {
   let discount = 0;
   const now = new Date();
-  const user = Users.findOne({ where: { id: userid } });
+  const user = await Users.findOne({ where: { id: userid } });
 
   if (!promotion || promotion.status !== 1) {
     return 0;
@@ -162,7 +162,7 @@ const calculatePromotionValue = (promotion, orderTotal, userid) => {
     return 0;
   }
 
-  if (promotion.require_point && user.loyaltypoint < promotion.require_point) {
+  if (promotion.require_point && (!user || user.loyaltypoint < promotion.require_point)) {
     return 0;
   }
 
@@ -172,7 +172,7 @@ const calculatePromotionValue = (promotion, orderTotal, userid) => {
   if (promotion.used_count >= promotion.max_uses) {
     return 0;
   }
-  if (Number(promotion.type)  === 0) {
+  if (Number(promotion.type) === 0) {
     discount = (orderTotal * promotion.value) / 100;
   } else if (Number(promotion.type) === 1) {
     discount = promotion.value;

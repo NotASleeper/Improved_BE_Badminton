@@ -193,7 +193,11 @@ const CheckoutCarts = async (req, res) => {
         status: 0,
       });
     } else {
-      const discount = calculatePromotionValue(promotion, totalAmount, userid);
+      const discount = await calculatePromotionValue(
+        promotion,
+        totalAmount,
+        userid
+      );
       newOrder = await Orders.create({
         userid,
         totalprice: totalAmount - discount,
