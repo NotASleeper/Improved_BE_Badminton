@@ -308,6 +308,10 @@ const getTop5ProductsByMonth = async (req, res) => {
           where: lang ? { languagecode: lang } : undefined,
           required: false,
         },
+        {
+          model: Imagesproduct,
+          attributes: ["url"],
+        },
       ],
     });
 
