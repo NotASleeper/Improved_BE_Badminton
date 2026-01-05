@@ -64,6 +64,28 @@ const getAllNotifications = async (req, res) => {
       });
     }
 
+    // Prefetch promotion info to fill template params (e.g., code, value)
+    const promotionIds = notificationsList
+      .filter((noti) => noti.type === "promotion" && noti.relatedid)
+      .map((noti) => noti.relatedid);
+
+    const promotionMeta = {};
+    if (promotionIds.length) {
+      const promotions = await Promotions.findAll({
+        where: { id: promotionIds },
+        attributes: ["id", "code", "type", "value", "min_order_value"],
+      });
+      promotions.forEach((p) => {
+        const valueText =
+          p.type === 0 ? `${p.value}%` : `${p.value.toLocaleString()}đ`;
+        promotionMeta[p.id] = {
+          code: p.code,
+          value: valueText,
+          min_order: p.min_order_value?.toLocaleString(),
+        };
+      });
+    }
+
     const translatedNoti = notificationsList.map((noti) => {
       // Parse relatedid từ JSON string thành object
       let params = { user_name: user ? user.name : undefined };
@@ -92,6 +114,13 @@ const getAllNotifications = async (req, res) => {
         reviewMeta[noti.relatedid]
       ) {
         params = { ...params, ...reviewMeta[noti.relatedid] };
+      }
+      if (
+        noti.type === "promotion" &&
+        noti.relatedid &&
+        promotionMeta[noti.relatedid]
+      ) {
+        params = { ...params, ...promotionMeta[noti.relatedid] };
       }
 
       // Dịch message với params

@@ -1,4 +1,6 @@
 const { Promotions, Users } = require("../models");
+const { createNotification } = require("../services/notification");
+const { Op } = require("sequelize");
 
 const createPromotions = async (req, res) => {
   try {
@@ -31,8 +33,59 @@ const createPromotions = async (req, res) => {
       end,
       status,
     });
+
+    // Gửi thông báo cho khách hàng khi tạo mã giảm giá mới
+    if (status === 1) {
+      // Chỉ gửi thông báo nếu promotion đang active
+      let targetUsers;
+
+      if (userid) {
+        // Mã giảm giá dành cho user cụ thể
+        targetUsers = await Users.findAll({
+          where: { id: userid },
+          attributes: ["id"],
+        });
+      } else if (require_point) {
+        // Mã giảm giá yêu cầu điểm loyalty
+        targetUsers = await Users.findAll({
+          where: {
+            loyaltypoint: {
+              [Op.gte]: require_point,
+            },
+          },
+          attributes: ["id"],
+        });
+      } else {
+        // Mã giảm giá công khai cho tất cả khách hàng
+        targetUsers = await Users.findAll({
+          where: { roleid: 1 }, // Giả sử roleid=1 là customer
+          attributes: ["id"],
+        });
+      }
+
+      // Tạo thông báo cho từng user
+      const notificationPromises = targetUsers.map((user) =>
+        createNotification({
+          userid: user.id,
+          type: "promotion",
+          messagekey: userid
+            ? "promotion.exclusive"
+            : require_point
+            ? "promotion.loyalty"
+            : "promotion.new",
+          relatedid: newPromotion.id,
+        })
+      );
+
+      await Promise.all(notificationPromises);
+      console.log(
+        `✅ Sent ${targetUsers.length} notifications for promotion ${code}`
+      );
+    }
+
     res.status(201).send(newPromotion);
   } catch (error) {
+    console.error("Error in createPromotions:", error);
     res.status(500).send(error);
   }
 };
@@ -162,7 +215,10 @@ const calculatePromotionValue = async (promotion, orderTotal, userid) => {
     return 0;
   }
 
-  if (promotion.require_point && (!user || user.loyaltypoint < promotion.require_point)) {
+  if (
+    promotion.require_point &&
+    (!user || user.loyaltypoint < promotion.require_point)
+  ) {
     return 0;
   }
 
