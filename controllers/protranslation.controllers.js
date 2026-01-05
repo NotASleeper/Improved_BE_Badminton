@@ -18,7 +18,7 @@ const createProTranslation = async (req, res) => {
 
 const createtranslatedProduct = async (req, res) => {
   try {
-    const { productid, lang, targetlang } = req.body;
+    const { productid, lang, targetlang } = req.query;
 
     // Lấy bản ghi gốc
     const translated = await Pro_translation.findOne({
