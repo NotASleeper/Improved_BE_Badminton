@@ -1,11 +1,19 @@
 const { raw } = require("express");
-const { Notifications, Users, Promotions } = require("../models");
+const {
+  Notifications,
+  Users,
+  Promotions,
+  Reviews,
+  Products,
+  Pro_translation,
+} = require("../models");
 const { translate } = require("../utils/translator");
 const { Op } = require("sequelize");
 
 const getAllNotifications = async (req, res) => {
   try {
     const { lang, userid, isread, type } = req.query;
+    const locale = lang || "vi";
     const where = {};
 
     const user = await Users.findOne({ where: { id: userid } });
@@ -20,9 +28,45 @@ const getAllNotifications = async (req, res) => {
       raw: true,
     });
 
+    // Prefetch review info to fill template params (e.g., product_name)
+    const reviewIds = notificationsList
+      .filter((noti) => noti.type === "review" && noti.relatedid)
+      .map((noti) => noti.relatedid);
+
+    const reviewMeta = {};
+    if (reviewIds.length) {
+      const reviews = await Reviews.findAll({
+        where: { id: reviewIds },
+        include: [
+          {
+            model: Products,
+            attributes: ["id"],
+            include: [
+              {
+                model: Pro_translation,
+                as: "translations",
+                attributes: ["name", "languagecode"],
+                where: { languagecode: locale },
+                required: false,
+              },
+            ],
+          },
+        ],
+      });
+      reviews.forEach((r) => {
+        const translations = r.Product?.translations || [];
+        const matched =
+          translations.find((t) => t.languagecode === locale) ||
+          translations[0];
+        reviewMeta[r.id] = {
+          product_name: matched ? matched.name : undefined,
+        };
+      });
+    }
+
     const translatedNoti = notificationsList.map((noti) => {
       // Parse relatedid từ JSON string thành object
-      let params = { user_name: user.name };
+      let params = { user_name: user ? user.name : undefined };
 
       if (noti.relatedid) {
         try {
@@ -38,8 +82,20 @@ const getAllNotifications = async (req, res) => {
         }
       }
 
+      // Bổ sung tham số cho các template cần order_id hoặc product_name
+      if (noti.type === "order" && noti.relatedid) {
+        params = { order_id: noti.relatedid, ...params };
+      }
+      if (
+        noti.type === "review" &&
+        noti.relatedid &&
+        reviewMeta[noti.relatedid]
+      ) {
+        params = { ...params, ...reviewMeta[noti.relatedid] };
+      }
+
       // Dịch message với params
-      const message = translate(lang || "vi", noti.messagekey, params);
+      const message = translate(locale, noti.messagekey, params);
 
       // Trả về object đầy đủ
       return {

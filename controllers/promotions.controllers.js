@@ -172,9 +172,9 @@ const calculatePromotionValue = (promotion, orderTotal, userid) => {
   if (promotion.used_count >= promotion.max_uses) {
     return 0;
   }
-  if (promotion.type === "percent") {
+  if (Number(promotion.type)  === 0) {
     discount = (orderTotal * promotion.value) / 100;
-  } else if (promotion.type === "fixed") {
+  } else if (Number(promotion.type) === 1) {
     discount = promotion.value;
   }
 
