@@ -1,4 +1,11 @@
-const { Reviews, Users, Orders, Ordersdetail, Products } = require("../models");
+const {
+  Reviews,
+  Users,
+  Orders,
+  Ordersdetail,
+  Products,
+  Pro_translation,
+} = require("../models");
 const { censorContent } = require("../services/censorship.js");
 const { createNotification } = require("../services/notification.js");
 
@@ -121,11 +128,25 @@ const updateReviews = async (req, res) => {
 
 const getAllReviewsbystatus = async (req, res) => {
   try {
-    const { status } = req.query;
+    const { status, lang } = req.query;
     const whereClause = status !== undefined ? { status } : {};
+    const translationWhere = lang ? { languagecode: lang } : {};
     const reviewsList = await Reviews.findAll({
       where: whereClause,
-      include: [{ model: Users }, { model: Products }],
+      include: [
+        { model: Users },
+        {
+          model: Products,
+          include: [
+            {
+              model: Pro_translation,
+              as: "translations",
+              where: translationWhere,
+              required: !!lang, // avoid INNER JOIN when lang not provided
+            },
+          ],
+        },
+      ],
     });
     res.status(200).send(reviewsList);
   } catch (error) {

@@ -17,6 +17,8 @@ const {
 } = require("@langchain/core/prompts");
 const { HumanMessage, AIMessage } = require("@langchain/core/messages");
 require("dotenv").config();
+const fs = require("fs"); // [MỚI] Thư viện đọc file
+const path = require("path"); // [MỚI] Thư viện xử lý đường dẫn
 
 const chatHistoryMemory = {};
 
@@ -97,6 +99,32 @@ const initVectorStore = async () => {
       );
     });
 
+    try {
+      const guidePath = path.join(__dirname, "../guide.md"); // Đường dẫn đến file
+
+      // Kiểm tra xem file có tồn tại không
+      if (fs.existsSync(guidePath)) {
+        const guideContent = fs.readFileSync(guidePath, "utf-8");
+
+        // Tạo Document cho chính sách
+        const policyDoc = new Document({
+          pageContent: `
+                [THÔNG TIN CHÍNH SÁCH CỬA HÀNG & HƯỚNG DẪN]
+                \n${guideContent}
+                `,
+          metadata: { type: "guide", id: 0 }, // Metadata đánh dấu đây là guide
+        });
+
+        // Thêm vào danh sách docs để nạp chung với sản phẩm
+        docs.push(policyDoc);
+        console.log("📄 Đã nạp thêm file Chính sách (guide.md) vào bộ nhớ.");
+      } else {
+        console.warn("⚠️ Không tìm thấy file guide.md, bỏ qua nạp chính sách.");
+      }
+    } catch (fileError) {
+      console.error("Lỗi đọc file guide.md:", fileError);
+    }
+
     const BATCH_SIZE = 5; // Chỉ nạp 5 sản phẩm mỗi lần
 
     // 1. Tạo Store với lô đầu tiên
@@ -176,7 +204,8 @@ const generateReply = async (userQuery, roomid) => {
         2. Chỉ cung cấp thông tin có trong dữ liệu.
         3. Luôn hiển thị giá tiền gốc (VND).
         4. Sử dụng **Lịch sử trò chuyện** bên dưới để hiểu ngữ cảnh (Ví dụ: khách hỏi "giá bao nhiêu", hãy hiểu là giá của sản phẩm vừa nhắc đến trước đó).
-        5. Trả lời ngắn gọn, thân thiện.
+        5. Nếu khách hỏi về đổi trả/bảo hành/liên hệ: **Tìm trong dữ liệu chính sách**.
+        6. Trả lời ngắn gọn, thân thiện.
         `,
       ],
       new MessagesPlaceholder("chat_history"),
