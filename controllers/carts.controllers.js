@@ -9,6 +9,7 @@ const {
   Flashsaledetails,
 } = require("../models");
 const { calculatePromotionValue } = require("./promotions.controllers");
+const { sendEmail } = require("../services/emailservice");
 const { isProductinFlashsale } = require("./flashsales.controllers");
 
 const createCarts = async (req, res) => {
@@ -209,6 +210,24 @@ const CheckoutCarts = async (req, res) => {
       });
     }
 
+    const user = await Users.findByPk(userid);
+
+    const subject = "Order Confirmation - BadmintonGearShop";
+    const text = `Thank you for your order! Your Order ID is #${newOrder.id}. Total amount: ${newOrder.totalprice} VND.`;
+    const html = `
+        <h1>Order placed Successfully!</h1>
+        <p>Dear <b>${user.name}</b>,</p>
+        <p>Thank you for shopping with BadmintonGearShop. Your order has been received and is being processed.</p>
+        <p>Order ID: <b>#${newOrder.id}</b></p>
+        <p>Total amount: <b>${newOrder.totalprice} VNĐ</b></p>
+        <p>Shipping address: ${newOrder.address}</p>
+        <p>If you have any questions, please contact our support team.</p>
+        <p>Best regards,<br/>The BadmintonGearShop Team</p>
+    `;
+
+    // Gửi email
+    await sendEmail(user.email, subject, text, html);
+
     // Tạo chi tiết đơn hàng cho từng sản phẩm trong giỏ hàng
     const orderDetails = listItems.map((item) => ({
       orderid: newOrder.id,
@@ -246,7 +265,7 @@ const CheckoutCarts = async (req, res) => {
     }
 
     // Cập nhật loyalty point của khách hàng (1 point/đơn hàng)
-    const user = await Users.findByPk(userid);
+
     if (user) {
       await Users.update(
         { loyaltypoint: (user.loyaltypoint || 0) + newOrder.totalprice / 1000 },
