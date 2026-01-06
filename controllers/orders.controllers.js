@@ -144,7 +144,7 @@ const updateOrder = async (req, res) => {
       await createNotification({
         userid: detailOrder.userid,
         type: "order",
-        messagekey: "order.canceled",
+        messagekey: "order.cancelled",
         relatedid: detailOrder.id,
       });
     }

@@ -73,7 +73,14 @@ const getAllNotifications = async (req, res) => {
     if (promotionIds.length) {
       const promotions = await Promotions.findAll({
         where: { id: promotionIds },
-        attributes: ["id", "code", "type", "value", "min_order_value"],
+        attributes: [
+          "id",
+          "code",
+          "type",
+          "value",
+          "min_order_value",
+          "require_point",
+        ],
       });
       promotions.forEach((p) => {
         const valueText =
@@ -82,13 +89,17 @@ const getAllNotifications = async (req, res) => {
           code: p.code,
           value: valueText,
           min_order: p.min_order_value?.toLocaleString(),
+          points: p.require_point,
         };
       });
     }
 
     const translatedNoti = notificationsList.map((noti) => {
       // Parse relatedid từ JSON string thành object
-      let params = { user_name: user ? user.name : undefined };
+      let params = {
+        user_name: user ? user.name : undefined,
+        points: user ? user.loyaltypoint : undefined,
+      };
 
       if (noti.relatedid) {
         try {
@@ -120,7 +131,7 @@ const getAllNotifications = async (req, res) => {
         noti.relatedid &&
         promotionMeta[noti.relatedid]
       ) {
-        params = { ...params, ...promotionMeta[noti.relatedid] };
+        params = { ...promotionMeta[noti.relatedid], ...params };
       }
 
       // Dịch message với params
