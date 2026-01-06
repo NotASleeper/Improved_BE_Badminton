@@ -150,7 +150,11 @@ const updateOrder = async (req, res) => {
     }
 
     // Đơn hàng đã được giao
-    if (delivered !== null && oldDelivered === null) {
+    if (
+      delivered !== undefined &&
+      delivered !== null &&
+      oldDelivered === null
+    ) {
       await createNotification({
         userid: detailOrder.userid,
         type: "order",
@@ -160,7 +164,7 @@ const updateOrder = async (req, res) => {
     }
 
     // Đơn hàng đang vận chuyển
-    if (shipping !== null && oldShipping === null) {
+    if (shipping !== undefined && shipping !== null && oldShipping === null) {
       await createNotification({
         userid: detailOrder.userid,
         type: "order",
@@ -170,7 +174,7 @@ const updateOrder = async (req, res) => {
     }
 
     // Đơn hàng đang được xử lý
-    if (process !== null && oldProcess === null) {
+    if (process !== undefined && process !== null && oldProcess === null) {
       await createNotification({
         userid: detailOrder.userid,
         type: "order",
